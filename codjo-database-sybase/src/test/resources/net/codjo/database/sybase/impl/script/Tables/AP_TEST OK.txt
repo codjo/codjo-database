@@ -1,0 +1,2 @@
+insert into AP_TEST ( COL_TEXT ) values ( 'TABLE' )
+go

@@ -1,0 +1,5 @@
+net.codjo.database.api
+
+net.codjo.database.api.query
+	-> net.codjo.database.common.api
+	-> net.codjo.database.common.api.structure

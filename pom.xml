@@ -1,0 +1,173 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+     | POM Relationships
+     -->
+
+    <parent>
+        <groupId>net.codjo.pom</groupId>
+        <artifactId>codjo-pom-library</artifactId>
+        <version>SNAPSHOT</version>
+    </parent>
+    <groupId>net.codjo.database</groupId>
+    <artifactId>codjo-database</artifactId>
+    <version>2.2-SNAPSHOT</version>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>net.codjo.database</groupId>
+                <artifactId>codjo-database-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.codjo.database</groupId>
+                <artifactId>codjo-database-api</artifactId>
+                <version>${project.version}</version>
+                <classifier>tests</classifier>
+            </dependency>
+            <dependency>
+                <groupId>net.codjo.database</groupId>
+                <artifactId>codjo-database-hsqldb-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.codjo.database</groupId>
+                <artifactId>codjo-database-mysql-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.codjo.database</groupId>
+                <artifactId>codjo-database-oracle-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.codjo.database</groupId>
+                <artifactId>codjo-database-sybase-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!-- TODO : partie à supprimer a la fin du decoupage de codjo-database -->
+            <dependency>
+                <groupId>net.codjo.database</groupId>
+                <artifactId>codjo-database-main</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.codjo.database</groupId>
+                <artifactId>codjo-database-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.codjo.database</groupId>
+                <artifactId>codjo-database-common</artifactId>
+                <classifier>tests</classifier>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.codjo.database</groupId>
+                <artifactId>codjo-database-sybase</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.codjo.database</groupId>
+                <artifactId>codjo-database-sybase</artifactId>
+                <classifier>tests</classifier>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.codjo.database</groupId>
+                <artifactId>codjo-database-oracle</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.codjo.database</groupId>
+                <artifactId>codjo-database-oracle</artifactId>
+                <classifier>tests</classifier>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.codjo.database</groupId>
+                <artifactId>codjo-database-mysql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.codjo.database</groupId>
+                <artifactId>codjo-database-mysql</artifactId>
+                <classifier>tests</classifier>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.codjo.database</groupId>
+                <artifactId>codjo-database-hsqldb</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.codjo.database</groupId>
+                <artifactId>codjo-database-hsqldb</artifactId>
+                <classifier>tests</classifier>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>net.codjo.test</groupId>
+            <artifactId>codjo-test-common</artifactId>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+    <!--
+     | Build Settings
+     -->
+
+    <properties>
+        <enforcer.skip>true</enforcer.skip>
+    </properties>
+
+    <packaging>pom</packaging>
+    <modules>
+        <!--
+           TO BE REMOVED
+        -->
+        <module>codjo-database-common</module>
+        <module>codjo-database-main</module>
+        <module>codjo-database-sybase</module>
+        <module>codjo-database-oracle</module>
+        <module>codjo-database-mysql</module>
+        <module>codjo-database-hsqldb</module>
+        <!--
+           Next generation
+        -->
+        <module>codjo-database-api</module>
+        <module>codjo-database-hsqldb-api</module>
+        <module>codjo-database-mysql-api</module>
+        <module>codjo-database-oracle-api</module>
+        <module>codjo-database-sybase-api</module>
+    </modules>
+
+    <!--
+    | Project Information
+    -->
+
+    <name>Lib &gt; Database</name>
+
+    <!--
+    | Environment Information
+    -->
+
+    <scm>
+        <connection>scm:git:https://github.com/codjo/codjo-database.git</connection>
+        <developerConnection>scm:git:https://github.com/codjo/codjo-database.git</developerConnection>
+        <url>https://github.com/codjo/codjo-database</url>
+    </scm>
+
+</project>

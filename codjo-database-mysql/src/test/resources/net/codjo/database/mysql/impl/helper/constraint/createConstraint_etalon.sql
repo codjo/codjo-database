@@ -1,0 +1,1 @@
+alter table AP_TOTO add constraint FK_MERETOTO_TOTO foreign key (PORTFOLIO_CODE, AUTOMATIC_UPDATE) references AP_MERETOTO (ISIN_CODE, AUTOMATIC_UPDATE);

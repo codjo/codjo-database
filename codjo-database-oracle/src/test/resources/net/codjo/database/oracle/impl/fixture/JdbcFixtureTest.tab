@@ -1,0 +1,5 @@
+create table JDBC_FIXTURE_TEST
+(
+    IMPORT_SETTINGS_ID      int  not null,
+    REMOVE_LEFT_ZEROS      int default 0  not null
+);

@@ -1,0 +1,2 @@
+insert into AP_TEST_NOT_EXISTS ( COL_TEXT ) values ( 'TABLE' )
+go

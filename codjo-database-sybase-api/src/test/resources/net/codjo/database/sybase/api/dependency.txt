@@ -1,0 +1,8 @@
+net.codjo.database.sybase.api
+	-> net.codjo.database.api
+	-> net.codjo.database.api.query
+	-> net.codjo.database.api.query.runner
+	-> net.codjo.database.sybase.api.query.runner
+
+net.codjo.database.sybase.api.query.runner
+	-> net.codjo.database.api.query.runner
