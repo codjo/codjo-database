@@ -1,10 +1,10 @@
 package net.codjo.database.common.impl.script;
-import net.codjo.database.common.api.ConnectionMetadata;
-import net.codjo.database.common.api.ExecSqlScript;
-import net.codjo.database.common.impl.FileUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import net.codjo.database.common.api.ConnectionMetadata;
+import net.codjo.database.common.api.ExecSqlScript;
+import net.codjo.database.common.impl.FileUtil;
 
 public abstract class AbstractExecSqlScript implements ExecSqlScript {
     private static final String NEW_LINE = System.getProperty("line.separator");
@@ -33,25 +33,23 @@ public abstract class AbstractExecSqlScript implements ExecSqlScript {
 
 
     public void execute(String workingDirectory, List<String> scriptFileNames) {
-        execute(workingDirectory, scriptFileNames.toArray(new String[0]));
+        execute(workingDirectory, scriptFileNames.toArray(new String[scriptFileNames.size()]));
     }
 
 
     public void executeContentOfFile(String deliveryFileName) {
-        File applicationFile = new File(deliveryFileName);
-        if (!applicationFile.exists()) {
+        if (!new File(deliveryFileName).exists()) {
             throw new RuntimeException("Le fichier " + deliveryFileName + " est introuvable");
         }
 
-        String unexistingFiles = findUnexistingFilesIn(deliveryFileName);
-        if (!"".equals(unexistingFiles.trim())) {
-            throw new RuntimeException(unexistingFiles);
-        }
+        String[] scripts = getScriptsFrom(deliveryFileName);
 
-        File workingDirectory = new File(deliveryFileName).getParentFile();
-        String[] scripts = getScripts(deliveryFileName);
+        File rootDirectory = new File(deliveryFileName).getParentFile();
+
+        assertAllFilesExist(rootDirectory, scripts);
+
         for (String scriptName : scripts) {
-            File scriptFile = new File(workingDirectory, scriptName);
+            File scriptFile = new File(rootDirectory, scriptName);
             String scriptContent;
             try {
                 scriptContent = FileUtil.loadContent(scriptFile);
@@ -61,7 +59,7 @@ public abstract class AbstractExecSqlScript implements ExecSqlScript {
             }
             if (!"".equals(scriptName.trim()) && !"".equals(scriptContent)) {
                 executeScript(scriptName, createSqlScriptCommand(scriptName),
-                              workingDirectory);
+                              rootDirectory);
             }
         }
     }
@@ -90,25 +88,25 @@ public abstract class AbstractExecSqlScript implements ExecSqlScript {
     }
 
 
-    private String[] getScripts(String deliveryFileName) {
+    private String[] getScriptsFrom(String fileName) {
         String contentOfFile;
         try {
-            contentOfFile = FileUtil.loadContent(new File(deliveryFileName));
+            contentOfFile = FileUtil.loadContent(new File(fileName));
         }
         catch (IOException e) {
-            throw new RuntimeException("Impossible de lire le fichier " + deliveryFileName, e);
+            throw new RuntimeException("Impossible de lire le fichier " + fileName, e);
         }
         if ("".equals(contentOfFile)) {
-            logger.log("Le fichier " + deliveryFileName + " est vide !");
+            logger.log("Le fichier " + fileName + " est vide !");
             return new String[]{};
         }
 
-        return contentOfFile.split(NEW_LINE);
+        return contentOfFile.split("[\r\n]+");
     }
 
 
     private void executeScript(String scriptName, String cmd, File workingDirectory) {
-        StringBuffer sqlLog = new StringBuffer("Exécution du script : " + scriptName.trim() + NEW_LINE);
+        StringBuilder sqlLog = new StringBuilder("Exécution du script : " + scriptName.trim() + NEW_LINE);
 
         String[] cmds = new String[]{"cmd.exe", "/c", cmd};
 
@@ -140,32 +138,24 @@ public abstract class AbstractExecSqlScript implements ExecSqlScript {
     }
 
 
-    private String findUnexistingFilesIn(String filePath) {
-        StringBuffer filesNotFound = new StringBuffer();
-
-        File file = new File(filePath);
-
-        String contentOfFile;
-        try {
-            contentOfFile = FileUtil.loadContent(file);
-        }
-        catch (IOException e) {
-            throw new RuntimeException("Impossible de lire le fichier " + file.getAbsolutePath(), e);
+    private void assertAllFilesExist(File rootDirectory, String[] scripts) {
+        if (scripts.length == 0) {
+            return;
         }
 
-        if ("".equals(contentOfFile)) {
-            return "";
-        }
-        String[] scripts = contentOfFile.split(NEW_LINE);
+        StringBuilder filesNotFound = new StringBuilder();
         for (String script : scripts) {
-            File parentFile = file.getParentFile();
-            if (!new File(parentFile, script).exists()) {
+            if (!new File(rootDirectory, script).exists()) {
                 if (filesNotFound.length() == 0) {
                     filesNotFound.append("Les fichiers suivants sont introuvables :").append(NEW_LINE);
                 }
-                filesNotFound.append(script.trim()).append(NEW_LINE);
+                filesNotFound.append(">").append(script).append("<").append(NEW_LINE);
             }
         }
-        return filesNotFound.toString();
+
+        String unexistingFiles = filesNotFound.toString();
+        if (!"".equals(unexistingFiles.trim())) {
+            throw new RuntimeException(unexistingFiles);
+        }
     }
 }

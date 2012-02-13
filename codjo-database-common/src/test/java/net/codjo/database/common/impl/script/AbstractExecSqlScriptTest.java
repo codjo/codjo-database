@@ -1,18 +1,21 @@
 package net.codjo.database.common.impl.script;
+import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
 import net.codjo.database.common.api.ConnectionMetadata;
 import net.codjo.database.common.api.ExecSqlScript.Logger;
 import net.codjo.database.common.api.JdbcFixture;
 import net.codjo.database.common.api.structure.SqlTable;
 import net.codjo.test.common.fixture.DirectoryFixture;
 import net.codjo.util.file.FileUtil;
-import java.io.File;
-import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.junit.After;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
+
+import static net.codjo.test.common.matcher.JUnitMatchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 public abstract class AbstractExecSqlScriptTest {
     private static final org.apache.log4j.Logger LOGGER = LogManager
           .getLogger(AbstractExecSqlScriptTest.class);
@@ -59,6 +62,7 @@ public abstract class AbstractExecSqlScriptTest {
             fail("Erreur dans le script AP_TEST_KO.txt !");
         }
         catch (Exception e) {
+            assertThat(e.getMessage(), containsString("AP_TEST_NOT_EXISTS"));
             jdbcFixture.assertContent(SqlTable.table("AP_TEST"), new String[][]{{"TABLE"}});
         }
     }
@@ -103,7 +107,7 @@ public abstract class AbstractExecSqlScriptTest {
         }
         catch (Exception e) {
             String expectedMessage = "Les fichiers suivants sont introuvables :" + NEW_LINE
-                                     + "Tables\\AP_TEST_BAD.txt" + NEW_LINE;
+                                     + ">Tables\\AP_TEST_BAD.txt<" + NEW_LINE;
             assertEquals(expectedMessage, e.getMessage());
         }
     }
@@ -141,9 +145,35 @@ public abstract class AbstractExecSqlScriptTest {
 
 
     @Test
+    public void test_executeContentOfFile_unixEndOfLine() throws Exception {
+        executeContentOfFileUsingLineSeparator("\n");
+    }
+
+
+    @Test
+    public void test_executeContentOfFile_windowsEndOfLine() throws Exception {
+        executeContentOfFileUsingLineSeparator("\r\n");
+    }
+
+
+    private void executeContentOfFileUsingLineSeparator(String lineSeparator) throws IOException {
+        File livraisonSql = new File(directoryFixture, "livraison-sql-OK.txt");
+        directoryFixture.makeSubDirectory("Tables");
+        FileUtil.copyFile(new File(getDeliveryFilePath("Tables/AP_TEST OK.txt")),
+                          new File(directoryFixture, "Tables/AP_TEST OK.txt"));
+
+        FileUtil.saveContent(livraisonSql, "Tables\\AP_TEST OK.txt"
+                                           + lineSeparator
+                                           + "Tables\\AP_TEST OK.txt");
+
+        execSqlScript.executeContentOfFile(livraisonSql.getPath());
+        jdbcFixture.assertContent(SqlTable.table("AP_TEST"), new String[][]{{"TABLE"}, {"TABLE"}});
+    }
+
+
+    @Test
     public void test_execute_ok() throws Exception {
-        execSqlScript.execute(getScriptDirectoryPath(), "Tables\\AP_TEST OK.txt",
-                              "Tables\\AP_TEST OK.txt");
+        execSqlScript.execute(getScriptDirectoryPath(), "Tables\\AP_TEST OK.txt", "Tables\\AP_TEST OK.txt");
         jdbcFixture.assertContent(SqlTable.table("AP_TEST"), new String[][]{{"TABLE"}, {"TABLE"}});
     }
 
