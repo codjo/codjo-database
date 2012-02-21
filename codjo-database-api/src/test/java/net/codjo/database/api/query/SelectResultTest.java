@@ -12,8 +12,8 @@ public class SelectResultTest {
 
     @Test
     public void testCloseStatement() throws Exception {
-        SelectResult result = new SelectResult(new ResultSetMock(new LogString("resultSet", log)),
-                                               new StatementMock(new LogString("statement", log)), 0, null);
+        SelectResult result = new SelectResult(new ResultSetMock(new LogString("resultSet", log)).getStub(),
+                                               new StatementMock(new LogString("statement", log)).getStub(), 0, null);
 
         result.close();
 
