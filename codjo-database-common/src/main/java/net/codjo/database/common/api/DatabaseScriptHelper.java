@@ -7,6 +7,12 @@ import net.codjo.database.common.api.structure.SqlTrigger;
 import net.codjo.database.common.api.structure.SqlView;
 public interface DatabaseScriptHelper {
 
+    void setLegacyMode(boolean legacyMode);
+
+
+    void setLegacyPrefix(String legacyPrefix);
+
+
     String getQueryDelimiter();
 
 
