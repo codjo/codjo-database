@@ -1,4 +1,9 @@
 package net.codjo.database.common.api;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Properties;
 import net.codjo.database.common.api.confidential.DatabaseTranscoder;
 import net.codjo.database.common.repository.AbstractDatabaseRepository;
 import net.codjo.database.common.repository.DatabaseRepository;
@@ -8,11 +13,6 @@ import net.codjo.database.common.repository.builder.JdbcFixtureBuilder;
 import net.codjo.database.common.repository.builder.RelationshipBuilder;
 import net.codjo.database.common.repository.builder.SQLFieldListBuilder;
 import net.codjo.database.common.repository.builder.TableComparatorBuilder;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Properties;
 @SuppressWarnings({"OverlyCoupledClass"})
 public class DatabaseFactory {
     private DatabaseRepository databaseRepository;
@@ -26,8 +26,8 @@ public class DatabaseFactory {
             throw e;
         }
         catch (Exception e) {
-            throw new RuntimeException(
-                  "Aucune base n'est configurée. Vérifiez votre dépendance vers agf-database-main", e);
+            throw new RuntimeException("Aucune base n'est configurée. "
+                                       + "Vérifiez votre dépendance vers codjo-database-${databaseType}-api", e);
         }
     }
 

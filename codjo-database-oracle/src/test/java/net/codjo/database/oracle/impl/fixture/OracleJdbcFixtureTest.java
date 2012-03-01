@@ -1,27 +1,36 @@
 package net.codjo.database.oracle.impl.fixture;
-import net.codjo.database.common.api.JdbcFixture;
-import net.codjo.database.common.api.JdbcFixtureTest;
-import static net.codjo.database.common.api.structure.SqlConstraint.foreignKey;
-import static net.codjo.database.common.api.structure.SqlField.fields;
-import net.codjo.database.common.api.structure.SqlTable;
-import static net.codjo.database.common.api.structure.SqlTable.table;
-import net.codjo.test.common.PathUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 import java.sql.SQLException;
 import junit.framework.AssertionFailedError;
+import net.codjo.database.common.api.JdbcFixture;
+import net.codjo.database.common.api.JdbcFixtureTest;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import static net.codjo.database.common.api.structure.SqlConstraint.foreignKey;
+import static net.codjo.database.common.api.structure.SqlField.fields;
+import static net.codjo.database.common.api.structure.SqlTable.table;
+import static net.codjo.test.common.PathUtil.findResourcesFileDirectory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import org.junit.Test;
 public class OracleJdbcFixtureTest extends JdbcFixtureTest {
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        jdbcFixture.drop(table("JDBC_FIXTURE_TEST"));
+        jdbcFixture.drop(table("JDBC_TEST_1"));
+        jdbcFixture.drop(table("JDBC_TEST_2"));
+    }
+
 
     @Test
     public void test_deleteAllTables_twoTables_oneFather() throws SQLException {
-        jdbcFixture
-              .create(SqlTable.table("JDBC_FIXTURE_TEST"), "COL_A varchar(5) constraint UN_COL_A unique");
-        jdbcFixture.create(SqlTable.table("JDBC_TEST_1"), "COL_A varchar(5)");
+        jdbcFixture.create(table("JDBC_FIXTURE_TEST"), "COL_A varchar(5) constraint UN_COL_A unique");
+        jdbcFixture.create(table("JDBC_TEST_1"), "COL_A varchar(5)");
         jdbcFixture.advanced().create(foreignKey("FK_1",
                                                  table("JDBC_TEST_1"), fields("COL_A"),
                                                  table("JDBC_FIXTURE_TEST"), fields("COL_A")));
@@ -32,17 +41,16 @@ public class OracleJdbcFixtureTest extends JdbcFixtureTest {
         jdbcFixture.advanced().assertExists("JDBC_FIXTURE_TEST");
         jdbcFixture.deleteAllTables();
 
-        jdbcFixture.assertIsEmpty(SqlTable.table("JDBC_FIXTURE_TEST"));
-        jdbcFixture.assertIsEmpty(SqlTable.table("JDBC_TEST_1"));
+        jdbcFixture.assertIsEmpty(table("JDBC_FIXTURE_TEST"));
+        jdbcFixture.assertIsEmpty(table("JDBC_TEST_1"));
     }
 
 
     @Test
     public void test_deleteAllTables_threeTables_sameFather() throws SQLException {
-        jdbcFixture
-              .create(SqlTable.table("JDBC_FIXTURE_TEST"), "COL_A varchar(5) constraint UN_COL_A unique");
-        jdbcFixture.create(SqlTable.table("JDBC_TEST_1"), "COL_A varchar(5)");
-        jdbcFixture.create(SqlTable.table("JDBC_TEST_2"), "COL_A varchar(5)");
+        jdbcFixture.create(table("JDBC_FIXTURE_TEST"), "COL_A varchar(5) constraint UN_COL_A unique");
+        jdbcFixture.create(table("JDBC_TEST_1"), "COL_A varchar(5)");
+        jdbcFixture.create(table("JDBC_TEST_2"), "COL_A varchar(5)");
         jdbcFixture.advanced().create(foreignKey("FK_1",
                                                  table("JDBC_TEST_1"), fields("COL_A"),
                                                  table("JDBC_FIXTURE_TEST"), fields("COL_A")));
@@ -55,18 +63,17 @@ public class OracleJdbcFixtureTest extends JdbcFixtureTest {
 
         jdbcFixture.deleteAllTables();
 
-        jdbcFixture.assertIsEmpty(SqlTable.table("JDBC_FIXTURE_TEST"));
-        jdbcFixture.assertIsEmpty(SqlTable.table("JDBC_TEST_1"));
-        jdbcFixture.assertIsEmpty(SqlTable.table("JDBC_TEST_2"));
+        jdbcFixture.assertIsEmpty(table("JDBC_FIXTURE_TEST"));
+        jdbcFixture.assertIsEmpty(table("JDBC_TEST_1"));
+        jdbcFixture.assertIsEmpty(table("JDBC_TEST_2"));
     }
 
 
     @Test
     public void test_deleteAllTables_threeTables_twoFathers() throws SQLException {
-        jdbcFixture
-              .create(SqlTable.table("JDBC_FIXTURE_TEST"), "COL_A varchar(5) constraint UN1_COL_A unique");
-        jdbcFixture.create(SqlTable.table("JDBC_TEST_1"), "COL_A varchar(5) constraint UN2_COL_A unique");
-        jdbcFixture.create(SqlTable.table("JDBC_TEST_2"), "COL_A varchar(5)");
+        jdbcFixture.create(table("JDBC_FIXTURE_TEST"), "COL_A varchar(5) constraint UN1_COL_A unique");
+        jdbcFixture.create(table("JDBC_TEST_1"), "COL_A varchar(5) constraint UN2_COL_A unique");
+        jdbcFixture.create(table("JDBC_TEST_2"), "COL_A varchar(5)");
         jdbcFixture.advanced().create(foreignKey("FK_1",
                                                  table("JDBC_TEST_1"), fields("COL_A"),
                                                  table("JDBC_FIXTURE_TEST"), fields("COL_A")));
@@ -79,17 +86,16 @@ public class OracleJdbcFixtureTest extends JdbcFixtureTest {
 
         jdbcFixture.deleteAllTables();
 
-        jdbcFixture.assertIsEmpty(SqlTable.table("JDBC_FIXTURE_TEST"));
-        jdbcFixture.assertIsEmpty(SqlTable.table("JDBC_TEST_1"));
-        jdbcFixture.assertIsEmpty(SqlTable.table("JDBC_TEST_2"));
+        jdbcFixture.assertIsEmpty(table("JDBC_FIXTURE_TEST"));
+        jdbcFixture.assertIsEmpty(table("JDBC_TEST_1"));
+        jdbcFixture.assertIsEmpty(table("JDBC_TEST_2"));
     }
 
 
     @Test
     public void test_executeCreateForeignKey() throws Exception {
-        jdbcFixture.create(SqlTable.table("JDBC_TEST_1"), "COL_A varchar(5)");
-        jdbcFixture
-              .create(SqlTable.table("JDBC_FIXTURE_TEST"), "COL_A varchar(5) constraint UN_COL_A unique");
+        jdbcFixture.create(table("JDBC_TEST_1"), "COL_A varchar(5)");
+        jdbcFixture.create(table("JDBC_FIXTURE_TEST"), "COL_A varchar(5) constraint UN_COL_A unique");
 
         jdbcFixture.advanced().create(foreignKey("FK_1",
                                                  table("JDBC_TEST_1"), fields("COL_A"),
@@ -99,8 +105,7 @@ public class OracleJdbcFixtureTest extends JdbcFixtureTest {
 
         jdbcFixture.doTearDown();
 
-        JdbcFixture anotherJdbcFixture = JdbcFixture
-              .newFixture(databaseHelper.createLibraryConnectionMetadata());
+        JdbcFixture anotherJdbcFixture = JdbcFixture.newFixture(databaseHelper.createLibraryConnectionMetadata());
         anotherJdbcFixture.doSetUp();
         anotherJdbcFixture.advanced().assertDoesntExist("JDBC_TEST_1");
         anotherJdbcFixture.advanced().assertDoesntExist("JDBC_FIXTURE_TEST");
@@ -112,18 +117,18 @@ public class OracleJdbcFixtureTest extends JdbcFixtureTest {
     @Override
     @Test
     public void test_executeCreateTableScriptFile() throws Exception {
-        jdbcFixture.advanced().executeCreateTableScriptFile(new File(
-              PathUtil.findResourcesFileDirectory(getClass()), "JdbcFixtureTest.tab"));
+        jdbcFixture.advanced()
+              .executeCreateTableScriptFile(new File(findResourcesFileDirectory(getClass()), "JdbcFixtureTest.tab"));
 
         jdbcFixture.advanced().assertExists("JDBC_FIXTURE_TEST");
 
-        jdbcFixture.drop(SqlTable.table("JDBC_FIXTURE_TEST"));
+        jdbcFixture.drop(table("JDBC_FIXTURE_TEST"));
     }
 
 
     @Test
     public void test_spoolQuery() throws Exception {
-        jdbcFixture.create(SqlTable.table("JDBC_FIXTURE_TEST"), "COL1 varchar(5), COL2 varchar(5)");
+        jdbcFixture.create(table("JDBC_FIXTURE_TEST"), "COL1 varchar(5), COL2 varchar(5)");
 
         jdbcFixture.executeUpdate("insert into JDBC_FIXTURE_TEST values ('1','2')");
 

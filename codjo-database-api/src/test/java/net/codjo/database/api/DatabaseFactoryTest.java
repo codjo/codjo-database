@@ -1,7 +1,8 @@
 package net.codjo.database.api;
 import net.codjo.database.api.DatabaseFactory.DatabaseInstantiationException;
-import static net.codjo.test.common.matcher.JUnitMatchers.*;
 import org.junit.Test;
+
+import static net.codjo.test.common.matcher.JUnitMatchers.*;
 /**
  *
  */
@@ -14,13 +15,11 @@ public class DatabaseFactoryTest {
         }
         catch (DatabaseInstantiationException ex) {
             assertThat(ex.getMessage(), is("Le moteur 'sybase' ne peut être créé."
-                                           + " Avez vous la dépendance sur 'agf-database-sybase-api' ?"));
+                                           + " Avez vous la dépendance sur 'codjo-database-sybase-api' ?"));
 
             Throwable cause = ex.getCause();
             assertThat(cause.getClass().getSimpleName(), is("ClassNotFoundException"));
             assertThat(cause.getMessage(), is("net.codjo.database.sybase.api.SybaseDatabase"));
         }
     }
-
-    
 }
