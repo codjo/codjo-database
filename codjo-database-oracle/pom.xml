@@ -27,7 +27,6 @@
         <dependency>
             <groupId>com.oracle</groupId>
             <artifactId>ojdbc</artifactId>
-			<classifier>${envClassifier}</classifier>			
         </dependency>
 	</dependencies>
 
