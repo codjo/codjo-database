@@ -10,6 +10,6 @@ public class SybaseDatabaseTranscoder extends DefaultDatabaseTranscoder {
         addSqlFieldType(INTEGER, "int");
         addSqlFieldType(LONGVARCHAR, "text");
 
-        addSqlFieldDefault(NOW, "getdate()");
+        addSqlFieldDefault(NOW, "getDate()");
     }
 }

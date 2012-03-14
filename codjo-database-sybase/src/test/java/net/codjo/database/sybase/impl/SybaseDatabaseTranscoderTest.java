@@ -15,6 +15,6 @@ public class SybaseDatabaseTranscoderTest {
         assertEquals("text", transcoder.transcodeSqlFieldType("longvarchar"));
         assertEquals("varchar", transcoder.transcodeSqlFieldType("varchar"));
 
-        assertEquals("getdate()", transcoder.transcodeSqlFieldDefault("now"));
+        assertEquals("getDate()", transcoder.transcodeSqlFieldDefault("now"));
     }
 }

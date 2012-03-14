@@ -1,4 +1,6 @@
 package net.codjo.database.common.impl.helper;
+import java.util.HashMap;
+import java.util.Map;
 import net.codjo.database.common.api.DatabaseQueryHelper;
 import net.codjo.database.common.api.DatabaseScriptHelper;
 import net.codjo.database.common.api.confidential.DatabaseTranscoder;
@@ -7,13 +9,13 @@ import net.codjo.database.common.api.structure.SqlFieldDefinition;
 import net.codjo.database.common.api.structure.SqlIndex;
 import net.codjo.database.common.api.structure.SqlTableDefinition;
 import net.codjo.database.common.api.structure.SqlTrigger;
-import java.util.HashMap;
-import java.util.Map;
 public abstract class AbstractDatabaseScriptHelper implements DatabaseScriptHelper {
     private final DatabaseQueryHelper queryHelper;
     private final DatabaseTranscoder databaseTranscoder;
     private final String queryDelimiter;
     private final Map<String, CustomScript> customScripts = new HashMap<String, CustomScript>();
+    private boolean legacyMode;
+    private String legacyPrefix;
 
 
     protected AbstractDatabaseScriptHelper(DatabaseQueryHelper databaseQueryHelper,
@@ -32,6 +34,26 @@ public abstract class AbstractDatabaseScriptHelper implements DatabaseScriptHelp
 
     protected DatabaseTranscoder getDatabaseTranscoder() {
         return databaseTranscoder;
+    }
+
+
+    public boolean isLegacyMode() {
+        return legacyMode;
+    }
+
+
+    public void setLegacyMode(boolean legacyMode) {
+        this.legacyMode = legacyMode;
+    }
+
+
+    public String getLegacyPrefix() {
+        return legacyPrefix;
+    }
+
+
+    public void setLegacyPrefix(String legacyPrefix) {
+        this.legacyPrefix = legacyPrefix;
     }
 
 
@@ -113,7 +135,7 @@ public abstract class AbstractDatabaseScriptHelper implements DatabaseScriptHelp
                                           SqlFieldDefinition fieldDefinition) {
         StringBuilder script = new StringBuilder()
               .append("\n")
-              .append("    ").append(fieldDefinition.getName()).append("      ")
+              .append("    ").append(getFieldDefinitionName(fieldDefinition)).append("      ")
               .append(getDatabaseTranscoder().transcodeSqlFieldType(fieldDefinition.getType()));
         if (fieldDefinition.getPrecision() != null) {
             script.append("(").append(fieldDefinition.getPrecision()).append(")");
@@ -133,6 +155,11 @@ public abstract class AbstractDatabaseScriptHelper implements DatabaseScriptHelp
             handleFieldIsCheck(script, fieldDefinition);
         }
         return script.toString();
+    }
+
+
+    protected String getFieldDefinitionName(SqlFieldDefinition fieldDefinition) {
+        return fieldDefinition.getName();
     }
 
 

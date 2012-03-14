@@ -26,9 +26,9 @@
         </dependency>
         <dependency>
             <groupId>com.oracle</groupId>
-            <artifactId>ojdbc14</artifactId>
+            <artifactId>ojdbc</artifactId>
         </dependency>
-    </dependencies>
+	</dependencies>
 
     <!--
     | Project Information

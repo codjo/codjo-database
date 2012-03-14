@@ -1,69 +1,68 @@
 package net.codjo.database.common.impl.helper;
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Arrays;
 import net.codjo.database.common.api.DatabaseFactory;
 import net.codjo.database.common.api.DatabaseHelper;
-import net.codjo.database.common.api.DatabaseQueryHelper;
 import net.codjo.database.common.api.JdbcFixture;
 import net.codjo.database.common.api.structure.SqlConstraint;
-import static net.codjo.database.common.api.structure.SqlConstraint.foreignKey;
-import static net.codjo.database.common.api.structure.SqlField.fieldName;
-import static net.codjo.database.common.api.structure.SqlField.fields;
 import net.codjo.database.common.api.structure.SqlFieldDefinition;
 import net.codjo.database.common.api.structure.SqlIndex;
 import net.codjo.database.common.api.structure.SqlIndex.Type;
+import net.codjo.database.common.api.structure.SqlTable;
+import net.codjo.database.common.api.structure.SqlTableDefinition;
+import net.codjo.database.common.api.structure.SqlTrigger;
+import net.codjo.database.common.api.structure.SqlView;
+import net.codjo.database.common.impl.helper.AbstractDatabaseScriptHelper.CustomScript;
+import net.codjo.test.common.LogString;
+import net.codjo.test.common.fixture.CompositeFixture;
+import net.codjo.test.common.fixture.DirectoryFixture;
+import net.codjo.util.file.FileUtil;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import static net.codjo.database.common.api.structure.SqlConstraint.foreignKey;
+import static net.codjo.database.common.api.structure.SqlField.fieldName;
+import static net.codjo.database.common.api.structure.SqlField.fields;
 import static net.codjo.database.common.api.structure.SqlIndex.Type.CLUSTERED;
 import static net.codjo.database.common.api.structure.SqlIndex.Type.NORMAL;
 import static net.codjo.database.common.api.structure.SqlIndex.Type.UNIQUE;
 import static net.codjo.database.common.api.structure.SqlIndex.Type.UNIQUE_CLUSTERED;
 import static net.codjo.database.common.api.structure.SqlIndex.index;
-import net.codjo.database.common.api.structure.SqlTable;
 import static net.codjo.database.common.api.structure.SqlTable.table;
-import net.codjo.database.common.api.structure.SqlTableDefinition;
-import net.codjo.database.common.api.structure.SqlTrigger;
 import static net.codjo.database.common.api.structure.SqlTrigger.checkRecordTrigger;
 import static net.codjo.database.common.api.structure.SqlTrigger.deleteTrigger;
 import static net.codjo.database.common.api.structure.SqlTrigger.insertTrigger;
 import static net.codjo.database.common.api.structure.SqlTrigger.updateTrigger;
-import net.codjo.database.common.api.structure.SqlView;
 import static net.codjo.database.common.api.structure.SqlView.view;
-import net.codjo.database.common.impl.helper.AbstractDatabaseScriptHelper.CustomScript;
-import net.codjo.test.common.LogString;
-import net.codjo.test.common.fixture.DirectoryFixture;
 import static net.codjo.test.common.matcher.JUnitMatchers.*;
-import net.codjo.util.file.FileUtil;
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Arrays;
-import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Test;
 public abstract class AbstractDatabaseScriptHelperTest {
     protected static final String NOT_IMPLEMENTED_SCRIPT = "not implemented !!!";
     protected static final String EMPTY_SCRIPT = "";
     protected AbstractDatabaseScriptHelper scriptHelper;
     protected DatabaseFactory databaseFactory = new DatabaseFactory();
     protected DatabaseHelper databaseHelper = databaseFactory.createDatabaseHelper();
-    protected DatabaseQueryHelper queryHelper = databaseFactory.getDatabaseQueryHelper();
     protected JdbcFixture jdbcFixture =
           JdbcFixture.newFixture(databaseHelper.createLibraryConnectionMetadata());
     protected DirectoryFixture directoryFixture = DirectoryFixture.newTemporaryDirectoryFixture();
+    private CompositeFixture fixture = new CompositeFixture(jdbcFixture, directoryFixture);
 
 
     @Before
     public void setUp() throws Exception {
         scriptHelper = (AbstractDatabaseScriptHelper)databaseFactory.createDatabaseScriptHelper();
-        jdbcFixture.doSetUp();
-        directoryFixture.doSetUp();
+        fixture.doSetUp();
     }
 
 
     @After
     public void tearDown() throws Exception {
-        directoryFixture.doTearDown();
-        jdbcFixture.doTearDown();
+        fixture.doTearDown();
     }
 
 

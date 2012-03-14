@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -48,11 +49,6 @@
                 <version>${project.version}</version>
             </dependency>
             <!-- TODO : partie à supprimer a la fin du decoupage de codjo-database -->
-            <dependency>
-                <groupId>net.codjo.database</groupId>
-                <artifactId>codjo-database-main</artifactId>
-                <version>${project.version}</version>
-            </dependency>
             <dependency>
                 <groupId>net.codjo.database</groupId>
                 <artifactId>codjo-database-common</artifactId>
@@ -139,7 +135,6 @@
            TO BE REMOVED
         -->
         <module>codjo-database-common</module>
-        <module>codjo-database-main</module>
         <module>codjo-database-sybase</module>
         <module>codjo-database-oracle</module>
         <module>codjo-database-mysql</module>

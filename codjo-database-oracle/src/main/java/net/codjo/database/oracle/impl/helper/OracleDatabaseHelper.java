@@ -1,8 +1,4 @@
 package net.codjo.database.oracle.impl.helper;
-import net.codjo.database.common.api.ConnectionMetadata;
-import net.codjo.database.common.api.DatabaseQueryHelper;
-import net.codjo.database.common.api.structure.SqlTable;
-import net.codjo.database.common.impl.helper.AbstractDatabaseHelper;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,9 +8,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import net.codjo.database.common.api.ConnectionMetadata;
+import net.codjo.database.common.api.DatabaseQueryHelper;
+import net.codjo.database.common.api.structure.SqlTable;
+import net.codjo.database.common.impl.helper.AbstractDatabaseHelper;
 import org.apache.log4j.Logger;
+
+import static net.codjo.database.common.api.structure.SqlConstraint.foreignKey;
+import static net.codjo.database.common.api.structure.SqlTable.table;
 public class OracleDatabaseHelper extends AbstractDatabaseHelper {
-    private static final Logger logger = Logger.getLogger(OracleDatabaseHelper.class);
+    private static final Logger LOG = Logger.getLogger(OracleDatabaseHelper.class);
     private enum ObjectType {
         PROCEDURE,
         VIEW,
@@ -33,7 +36,7 @@ public class OracleDatabaseHelper extends AbstractDatabaseHelper {
 
     public String getConnectionUrl(ConnectionMetadata connectionMetadata) {
         return "jdbc:oracle:thin:@" + connectionMetadata.getHostname() + ":" + connectionMetadata.getPort()
-               + ":" + connectionMetadata.getCatalog();
+               + ":" + connectionMetadata.getBase();
     }
 
 
@@ -63,7 +66,7 @@ public class OracleDatabaseHelper extends AbstractDatabaseHelper {
 
 
     public void dropAllObjects(Connection connection) throws SQLException {
-        dropAllForeignKeys(connection);
+        dropAllConstraints(connection);
         dropAllObjects(connection, ObjectType.PROCEDURE);
         dropAllObjects(connection, ObjectType.FUNCTION);
         dropAllObjects(connection, ObjectType.SEQUENCE);
@@ -92,9 +95,51 @@ public class OracleDatabaseHelper extends AbstractDatabaseHelper {
     }
 
 
+    protected void dropAllConstraints(Connection connection) throws SQLException {
+        Statement statement = connection.createStatement();
+        try {
+            dropTheseConstraints(connection, statement,
+                                 getSelectPkConstraintQuery(connection, "where CONSTRAINT_TYPE != 'P'"));
+            dropTheseConstraints(connection, statement,
+                                 getSelectPkConstraintQuery(connection, "where CONSTRAINT_TYPE = 'P'"));
+        }
+        finally {
+            statement.close();
+        }
+    }
+
+
+    private void dropTheseConstraints(Connection connection, Statement statement, String query) throws SQLException {
+        ResultSet resultSet = statement.executeQuery(query);
+        while (resultSet.next()) {
+            String tableName = resultSet.getString("TABLE_NAME");
+            String constraintName = resultSet.getString("CONSTRAINT_NAME");
+            try {
+                dropForeignKey(connection, foreignKey(constraintName, table(tableName)));
+            }
+            catch (SQLException e) {
+                SQLException sqlException =
+                      new SQLException("Unable to drop constraint " + tableName + "." + constraintName + " - "
+                                       + e.getMessage());
+                sqlException.initCause(e);
+                throw sqlException;
+            }
+        }
+        resultSet.close();
+    }
+
+
+    protected String getSelectPkConstraintQuery(Connection connection, String where) {
+        return "select TABLE_NAME, CONSTRAINT_NAME "
+               + "from user_constraints "
+               + where
+               + "order by CONSTRAINT_TYPE";
+    }
+
+
     @Override
     protected String getSelectAllFksQuery(Connection connection) {
-        return "select TABLE_NAME, CONSTRAINT_NAME from user_constraints order by CONSTRAINT_TYPE";
+        return "select TABLE_NAME, CONSTRAINT_NAME from user_constraints where CONSTRAINT_TYPE = 'R'";
     }
 
 
@@ -225,7 +270,7 @@ public class OracleDatabaseHelper extends AbstractDatabaseHelper {
                 dropObject(connection, selectQuery, ObjectType.PACKAGE, systenColumnName);
                 break;
             case SYNONYM:
-                logger.info("Drop des " + ObjectType.SYNONYM + " not yet implemented");
+                LOG.info("Drop des " + ObjectType.SYNONYM + " not yet implemented");
                 break;
             default:
                 break;
