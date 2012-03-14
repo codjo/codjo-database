@@ -90,6 +90,7 @@ public abstract class JdbcFixture implements Fixture {
 
 
     public void create(SqlTable table, String tableContent) {
+        createdTables.add(table);
         String create = queryHelper.buildCreateTableQuery(table, tableContent);
         try {
             executeUpdate(create);
@@ -97,7 +98,6 @@ public abstract class JdbcFixture implements Fixture {
         catch (SQLException e) {
             throw new RuntimeSqlException(e);
         }
-        createdTables.add(table);
     }
 
 
@@ -285,7 +285,7 @@ public abstract class JdbcFixture implements Fixture {
             }
             resultContent.add(resultLine);
         }
-        if (resultContent.size() == 0) {
+        if (resultContent.isEmpty()) {
             return null;
         }
         return resultContent.toArray(new String[][]{});

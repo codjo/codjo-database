@@ -1,12 +1,18 @@
 package net.codjo.database.oracle.impl.helper;
+import java.sql.SQLException;
+import java.util.Arrays;
 import net.codjo.database.common.api.RuntimeSqlException;
 import net.codjo.database.common.api.structure.SqlConstraint;
+import net.codjo.database.common.api.structure.SqlFieldDefinition;
 import net.codjo.database.common.api.structure.SqlTable;
-import static net.codjo.database.common.api.structure.SqlTable.table;
+import net.codjo.database.common.api.structure.SqlTableDefinition;
 import net.codjo.database.common.impl.helper.AbstractDatabaseScriptHelperTest;
-import java.sql.SQLException;
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+
+import static net.codjo.database.common.api.structure.SqlTable.table;
+import static net.codjo.test.common.matcher.JUnitMatchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 public class OracleDatabaseScriptHelperTest extends AbstractDatabaseScriptHelperTest {
 
     @Test
@@ -14,8 +20,25 @@ public class OracleDatabaseScriptHelperTest extends AbstractDatabaseScriptHelper
     }
 
 
+    @Test
+    public void test_createTable_withReservedKeyword() throws Exception {
+        SqlTableDefinition table = new SqlTableDefinition("AP_TABLE");
+        SqlFieldDefinition comment = new SqlFieldDefinition("COMMENT");
+        comment.setType("varchar");
+        comment.setPrecision("15");
+        comment.setCheck("'A','B'");
+        table.setSqlFieldDefinitions(Arrays.asList(comment));
+
+        String definition = scriptHelper.buildCreateTableScript(table);
+
+        assertThat(cleanUp(definition), is("create table AP_TABLE("
+                                           + "    \"COMMENT\"      varchar(15)  null"
+                                           + " constraint CKC_COMMENT check (\"COMMENT\" in ('A','B'))"
+                                           + ");"));
+    }
+
+
     @Override
-    @Test(expected = UnsupportedOperationException.class)
     public void test_createTable_withIdentity() throws Exception {
         super.test_createTable_withIdentity();
     }
@@ -29,7 +52,6 @@ public class OracleDatabaseScriptHelperTest extends AbstractDatabaseScriptHelper
 
 
     @Override
-    @Test(expected = UnsupportedOperationException.class)
     public void test_executeCreateTable_withIdentity() throws Exception {
         super.test_executeCreateTable_withIdentity();
     }
@@ -178,5 +200,10 @@ public class OracleDatabaseScriptHelperTest extends AbstractDatabaseScriptHelper
             throw new RuntimeSqlException(e);
         }
         super.create(constraint);
+    }
+
+
+    private static String cleanUp(String definition) {
+        return definition.replaceAll("\n", "");
     }
 }

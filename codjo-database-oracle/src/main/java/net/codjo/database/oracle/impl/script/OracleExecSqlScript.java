@@ -1,7 +1,7 @@
 package net.codjo.database.oracle.impl.script;
 import net.codjo.database.common.impl.script.AbstractExecSqlScript;
-public class OracleExecSqlScript extends AbstractExecSqlScript {
 
+public class OracleExecSqlScript extends AbstractExecSqlScript {
     @Override
     public String getProcessInputMessage() {
         return "\n\nexit";
@@ -30,8 +30,10 @@ public class OracleExecSqlScript extends AbstractExecSqlScript {
 
     @Override
     public String createSqlScriptCommand(String scriptFileName) {
-        return "sqlplus " + getConnectionMetadata().getUser() + "/" + getConnectionMetadata().getPassword()
-               + "@" + getConnectionMetadata().getCatalog() + " @\"" + scriptFileName + "\"";
+        String sqlString = "sqlplus " + getConnectionMetadata().getUser() + "/" + getConnectionMetadata().getPassword()
+                           + "@" + getConnectionMetadata().getBase() + " @\"" + scriptFileName + "\"";
+        getLogger().log(sqlString);
+        return sqlString;
     }
 
 

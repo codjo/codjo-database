@@ -4,4 +4,3 @@ net.codjo.database.oracle.api.query.runner
 	-> net.codjo.database.api
 	-> net.codjo.database.api.query
 	-> net.codjo.database.common.api
-	-> net.codjo.database.oracle.impl.fixture

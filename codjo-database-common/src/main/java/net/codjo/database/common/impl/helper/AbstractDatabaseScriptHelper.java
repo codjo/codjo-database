@@ -135,7 +135,7 @@ public abstract class AbstractDatabaseScriptHelper implements DatabaseScriptHelp
                                           SqlFieldDefinition fieldDefinition) {
         StringBuilder script = new StringBuilder()
               .append("\n")
-              .append("    ").append(fieldDefinition.getName()).append("      ")
+              .append("    ").append(getFieldDefinitionName(fieldDefinition)).append("      ")
               .append(getDatabaseTranscoder().transcodeSqlFieldType(fieldDefinition.getType()));
         if (fieldDefinition.getPrecision() != null) {
             script.append("(").append(fieldDefinition.getPrecision()).append(")");
@@ -155,6 +155,11 @@ public abstract class AbstractDatabaseScriptHelper implements DatabaseScriptHelp
             handleFieldIsCheck(script, fieldDefinition);
         }
         return script.toString();
+    }
+
+
+    protected String getFieldDefinitionName(SqlFieldDefinition fieldDefinition) {
+        return fieldDefinition.getName();
     }
 
 

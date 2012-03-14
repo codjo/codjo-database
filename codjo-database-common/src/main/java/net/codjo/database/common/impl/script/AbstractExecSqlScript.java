@@ -23,6 +23,11 @@ public abstract class AbstractExecSqlScript implements ExecSqlScript {
     }
 
 
+    public Logger getLogger() {
+        return logger;
+    }
+
+
     public void execute(String workingDirectory, String... scriptFileNames) {
         for (String scriptName : scriptFileNames) {
             if (!"".equals(scriptName.trim())) {

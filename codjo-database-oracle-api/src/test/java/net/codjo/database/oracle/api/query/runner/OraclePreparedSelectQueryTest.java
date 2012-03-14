@@ -25,6 +25,6 @@ public class OraclePreparedSelectQueryTest extends PreparedSelectQueryTestCase {
 
     @Override
     protected JdbcFixture createFixture() throws SQLException, ClassNotFoundException {
-        return OracleSelectQueryTest.createOracleFixture();
+        return JdbcFixture.newFixture();
     }
 }
