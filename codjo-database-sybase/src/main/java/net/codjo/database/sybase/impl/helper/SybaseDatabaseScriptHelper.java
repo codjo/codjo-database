@@ -1,4 +1,5 @@
 package net.codjo.database.sybase.impl.helper;
+import java.util.List;
 import net.codjo.database.common.api.DatabaseQueryHelper;
 import net.codjo.database.common.api.confidential.DatabaseTranscoder;
 import net.codjo.database.common.api.structure.SqlConstraint;
@@ -6,14 +7,19 @@ import net.codjo.database.common.api.structure.SqlField;
 import net.codjo.database.common.api.structure.SqlFieldDefinition;
 import net.codjo.database.common.api.structure.SqlIndex;
 import net.codjo.database.common.api.structure.SqlTable;
+import net.codjo.database.common.api.structure.SqlTableDefinition;
 import net.codjo.database.common.api.structure.SqlTrigger;
 import net.codjo.database.common.api.structure.SqlTrigger.TableLink;
 import net.codjo.database.common.api.structure.SqlView;
 import net.codjo.database.common.impl.helper.AbstractDatabaseScriptHelper;
+import net.codjo.database.sybase.impl.LegacyDatabaseTranscoder;
+import net.codjo.database.sybase.impl.SybaseDatabaseTranscoder;
 import net.codjo.database.sybase.util.SybaseUtil;
+
 import static net.codjo.database.sybase.util.SybaseUtil.getName;
-import java.util.List;
 public class SybaseDatabaseScriptHelper extends AbstractDatabaseScriptHelper {
+    private boolean legacyTable;
+
 
     public SybaseDatabaseScriptHelper(DatabaseQueryHelper databaseQueryHelper,
                                       DatabaseTranscoder databaseTranscoder) {
@@ -32,6 +38,31 @@ public class SybaseDatabaseScriptHelper extends AbstractDatabaseScriptHelper {
                 return buildLogGapCreationScript(table, gapValue);
             }
         });
+    }
+
+
+    @Override
+    protected DatabaseTranscoder getDatabaseTranscoder() {
+        if (legacyTable) {
+            return new LegacyDatabaseTranscoder();
+        }
+        else {
+            return new SybaseDatabaseTranscoder();
+        }
+    }
+
+
+    @Override
+    protected String buildFieldDefinition(SqlTableDefinition tableDefinition,
+                                          SqlFieldDefinition fieldDefinition) {
+        if (isLegacyMode()) {
+            legacyTable = getLegacyPrefix() != null && tableDefinition.getName().startsWith(getLegacyPrefix());
+            return super.buildFieldDefinition(tableDefinition, fieldDefinition)
+                  .replace("bit default null", "bit");
+        }
+        else {
+            return super.buildFieldDefinition(tableDefinition, fieldDefinition);
+        }
     }
 
 

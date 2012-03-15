@@ -4,6 +4,13 @@
  * Copyright (c) 2001 AGF Asset Management.
  */
 package net.codjo.database.analyse;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import net.codjo.database.analyse.structure.ColumnsStructure;
 import net.codjo.database.analyse.structure.ConstraintsStructure;
 import net.codjo.database.analyse.structure.ForeignKeysStructure;
@@ -18,15 +25,9 @@ import net.codjo.database.analyse.structure.TableStructure;
 import net.codjo.database.analyse.structure.TriggerStructure;
 import net.codjo.database.analyse.structure.UserDataType;
 import net.codjo.database.analyse.structure.ViewStructure;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 /**
  */
+@SuppressWarnings({"UseOfSystemOutOrSystemErr"})
 public class DatabaseComparator {
     private final TableStructure tableStructure = new TableStructure();
     private final RulesStructure rulesStructure = new RulesStructure();
@@ -88,7 +89,7 @@ public class DatabaseComparator {
         boolean result = tableModified || udtModified || procModified || viewModified || triggerModified;
         if (result) {
             System.out.println("##############################################################");
-            System.out.println("# agf-database-analyse :                                     #");
+            System.out.println("# codjo-database-analyse :                                   #");
             System.out.println("# differences found between database structures              #");
             System.out.println();
             if (tableModified) {

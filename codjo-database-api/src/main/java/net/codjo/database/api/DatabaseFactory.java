@@ -35,7 +35,7 @@ public class DatabaseFactory {
 
         public DatabaseInstantiationException(Engine engine, Exception cause) {
             super("Le moteur '" + engine.toString().toLowerCase() + "' ne peut être créé."
-                  + " Avez vous la dépendance sur 'agf-database-"
+                  + " Avez vous la dépendance sur 'codjo-database-"
                   + engine.toString().toLowerCase() + "-api' ?",
                   cause);
         }

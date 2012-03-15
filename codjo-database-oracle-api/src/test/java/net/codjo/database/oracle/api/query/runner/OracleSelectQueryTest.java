@@ -27,17 +27,6 @@ public class OracleSelectQueryTest extends SelectQueryTestCase {
 
     @Override
     protected JdbcFixture createFixture() throws SQLException, ClassNotFoundException {
-        return createOracleFixture();
-    }
-
-
-    static JdbcFixture createOracleFixture() throws ClassNotFoundException, SQLException {
-        ConnectionMetadata connectionMetadata = createMeta("oracle.jdbc.driver.OracleDriver",
-                                                           "ad-idw",
-                                                           "31522",
-                                                           "LIB",
-                                                           "LIB",
-                                                           "IDWDEV2");
-        return new OracleJdbcFixtureBuilder(null).get(connectionMetadata);
+        return JdbcFixture.newFixture();
     }
 }

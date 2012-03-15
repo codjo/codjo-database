@@ -63,6 +63,7 @@ public abstract class AbstractDatabaseHelperTest {
         connectionMetadata.setUser(properties.getProperty("database.user"));
         connectionMetadata.setPassword(properties.getProperty("database.password"));
         connectionMetadata.setCatalog(properties.getProperty("database.catalog"));
+        connectionMetadata.setBase(properties.getProperty("database.base"));
 
         Connection connection = databaseHelper.createConnection(connectionMetadata);
 

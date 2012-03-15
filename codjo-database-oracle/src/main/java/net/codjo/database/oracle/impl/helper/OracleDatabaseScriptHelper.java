@@ -1,4 +1,5 @@
 package net.codjo.database.oracle.impl.helper;
+import java.util.List;
 import net.codjo.database.common.api.DatabaseQueryHelper;
 import net.codjo.database.common.api.confidential.DatabaseTranscoder;
 import net.codjo.database.common.api.structure.SqlConstraint;
@@ -6,17 +7,25 @@ import net.codjo.database.common.api.structure.SqlField;
 import net.codjo.database.common.api.structure.SqlFieldDefinition;
 import net.codjo.database.common.api.structure.SqlIndex;
 import net.codjo.database.common.api.structure.SqlTable;
-import net.codjo.database.common.api.structure.SqlTableDefinition;
 import net.codjo.database.common.api.structure.SqlTrigger;
 import net.codjo.database.common.api.structure.SqlTrigger.TableLink;
 import net.codjo.database.common.api.structure.SqlView;
 import net.codjo.database.common.impl.helper.AbstractDatabaseScriptHelper;
-import java.util.List;
 public class OracleDatabaseScriptHelper extends AbstractDatabaseScriptHelper {
 
     public OracleDatabaseScriptHelper(DatabaseQueryHelper databaseQueryHelper,
                                       DatabaseTranscoder databaseTranscoder) {
         super(databaseQueryHelper, databaseTranscoder, ";");
+    }
+
+
+    @Override
+    protected String getFieldDefinitionName(SqlFieldDefinition fieldDefinition) {
+        String name = fieldDefinition.getName();
+        if (isOracleKeyword(name)) {
+            return "\"" + name + "\"";
+        }
+        return name;
     }
 
 
@@ -35,8 +44,13 @@ public class OracleDatabaseScriptHelper extends AbstractDatabaseScriptHelper {
 
 
     public String buildDropTableScript(SqlTable table) {
+        return dropObject("Table", table.getName());
+    }
+
+
+    private String dropObject(String type, String tableName) {
         return new StringBuilder()
-              .append("execute util_pk.dropTable('").append(table.getName()).append("');\n")
+              .append("execute util_pk.drop").append(type).append("('").append(tableName).append("');\n")
               .append("/\n")
               .append("\n")
               .append("sho err\n")
@@ -46,36 +60,21 @@ public class OracleDatabaseScriptHelper extends AbstractDatabaseScriptHelper {
 
     @Override
     protected void handleFieldIsIdentity(StringBuilder script) {
-        throw new UnsupportedOperationException();
     }
 
 
     @Override
     protected void handleFieldIsCheck(StringBuilder script, SqlFieldDefinition fieldDefinition) {
-        String fieldName = fieldDefinition.getName();
-        script.append("\n")
-              .append(" constraint CKC_").append(fieldName)
-              .append(" check (").append(fieldName)
-              .append(" in (").append(fieldDefinition.getCheck()).append("))");
-    }
-
-
-    @Override
-    protected String buildCreateTableScriptEndPart(SqlTableDefinition tableDefinition) {
-        StringBuilder script = new StringBuilder();
-        if (tableDefinition.isPkGenerator() && !tableDefinition.getPrimaryKeys().isEmpty()) {
-            script.append(",\n")
-                  .append(" constraint PK_").append(tableDefinition.getName()).append(" primary key (");
-            int idx = 0;
-            for (String primaryKey : tableDefinition.getPrimaryKeys()) {
-                script.append(primaryKey);
-                if (++idx < tableDefinition.getPrimaryKeys().size()) {
-                    script.append(", ");
-                }
-            }
-            script.append(")");
+        String check = fieldDefinition.getCheck();
+        String checkValue = null;
+        if (check != null) {
+            checkValue = check.replaceAll("\"", "'");
         }
-        return script.append(super.buildCreateTableScriptEndPart(tableDefinition)).toString();
+
+        script.append("\n")
+              .append(" constraint CKC_").append(fieldDefinition.getName())
+              .append(" check (").append(getFieldDefinitionName(fieldDefinition))
+              .append(" in (").append(checkValue).append("))");
     }
 
 
@@ -85,12 +84,7 @@ public class OracleDatabaseScriptHelper extends AbstractDatabaseScriptHelper {
 
 
     public String buildDropIndexScript(SqlIndex index) {
-        return new StringBuilder()
-              .append("execute util_pk.dropIndex('").append(index.getName()).append("');\n")
-              .append("/\n")
-              .append("\n")
-              .append("sho err\n")
-              .toString();
+        return dropObject("Index", index.getName());
     }
 
 
@@ -264,5 +258,10 @@ public class OracleDatabaseScriptHelper extends AbstractDatabaseScriptHelper {
         }
         return script
               .append("))").toString();
+    }
+
+
+    private boolean isOracleKeyword(String name) {
+        return "COMMENT".equals(name);
     }
 }

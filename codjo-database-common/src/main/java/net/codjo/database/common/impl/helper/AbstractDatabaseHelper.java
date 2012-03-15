@@ -1,12 +1,4 @@
 package net.codjo.database.common.impl.helper;
-import net.codjo.database.common.api.ConnectionMetadata;
-import net.codjo.database.common.api.DatabaseHelper;
-import net.codjo.database.common.api.DatabaseQueryHelper;
-import net.codjo.database.common.api.structure.SqlConstraint;
-import static net.codjo.database.common.api.structure.SqlConstraint.foreignKey;
-import static net.codjo.database.common.api.structure.SqlTable.table;
-import static net.codjo.database.common.api.structure.SqlTable.temporaryTable;
-import net.codjo.database.common.impl.fixture.MapOrderListTransformer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -19,6 +11,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import net.codjo.database.common.api.ConnectionMetadata;
+import net.codjo.database.common.api.DatabaseHelper;
+import net.codjo.database.common.api.DatabaseQueryHelper;
+import net.codjo.database.common.api.structure.SqlConstraint;
+import net.codjo.database.common.impl.fixture.MapOrderListTransformer;
+
+import static net.codjo.database.common.api.structure.SqlConstraint.foreignKey;
+import static net.codjo.database.common.api.structure.SqlTable.table;
+import static net.codjo.database.common.api.structure.SqlTable.temporaryTable;
 public abstract class AbstractDatabaseHelper implements DatabaseHelper {
     private final DatabaseQueryHelper queryHelper;
     private Properties databaseProperties;
@@ -162,7 +163,16 @@ public abstract class AbstractDatabaseHelper implements DatabaseHelper {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 String constraintName = resultSet.getString("CONSTRAINT_NAME");
-                dropForeignKey(connection, foreignKey(constraintName, table(tableName)));
+                try {
+                    dropForeignKey(connection, foreignKey(constraintName, table(tableName)));
+                }
+                catch (SQLException e) {
+                    SQLException sqlException =
+                          new SQLException("Unable to drop foreign Key " + tableName + "." + constraintName + " - "
+                                           + e.getMessage());
+                    sqlException.initCause(e);
+                    throw sqlException;
+                }
             }
         }
         finally {
