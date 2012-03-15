@@ -102,12 +102,7 @@ public class OracleDatabaseScriptHelper extends AbstractDatabaseScriptHelper {
 
 
     public String buildDropConstraintScript(SqlConstraint constraint) {
-        return new StringBuilder()
-              .append("execute util_pk.dropConstraint('").append(constraint.getName()).append("');\n")
-              .append("/\n")
-              .append("\n")
-              .append("sho err\n")
-              .toString();
+        return dropObject("Constraint", constraint.getName());
     }
 
 
@@ -146,12 +141,14 @@ public class OracleDatabaseScriptHelper extends AbstractDatabaseScriptHelper {
                 break;
         }
         script.append(" on ").append(trigger.getTable().getName()).append(" for each row\n");
+        script.append("declare\n")
+              .append("    v_errno    NUMBER(12)").append(";\n")
+              .append("    v_errmsg   VARCHAR2(255)").append(";\n")
+              .append("\n");
+
         switch (trigger.getType()) {
             case CHECK_RECORD:
-                script.append("\n")
-                      .append("declare\n")
-                      .append("    parentCount number := 0;\n")
-                      .append("\n");
+                script.append("    parentCount number := 0").append(";\n");
                 break;
             case DELETE:
             case INSERT:
@@ -169,7 +166,12 @@ public class OracleDatabaseScriptHelper extends AbstractDatabaseScriptHelper {
     protected String buildTriggerScriptEndPart(SqlTrigger trigger) {
         String triggerName = trigger.getName();
         return new StringBuilder()
-              .append("end ").append(triggerName).append(";\n")
+              .append("return").append(";\n")
+              .append("   /*  Errors handling  */").append("\n")
+              .append("   <<error>>").append("\n")
+              .append("   raise_application_error( -20002, v_errno|| ':' ||v_errmsg )").append(";\n")
+              .append("   ROLLBACK").append(";\n")
+              .append("end").append(";\n")
               .append("/\n")
               .append("\n")
               .append("prompt Trigger ").append(triggerName).append(" created\n")
