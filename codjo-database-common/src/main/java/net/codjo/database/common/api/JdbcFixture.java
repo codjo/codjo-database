@@ -1,10 +1,4 @@
 package net.codjo.database.common.api;
-import net.codjo.database.common.api.DatabaseQueryHelper.SelectType;
-import net.codjo.database.common.api.structure.SqlObject;
-import net.codjo.database.common.api.structure.SqlTable;
-import static net.codjo.database.common.api.structure.SqlTable.table;
-import net.codjo.database.common.impl.fixture.MapOrderListTransformer;
-import net.codjo.test.common.fixture.Fixture;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -14,7 +8,14 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import junit.framework.Assert;
+import net.codjo.database.common.api.DatabaseQueryHelper.SelectType;
+import net.codjo.database.common.api.structure.SqlObject;
+import net.codjo.database.common.api.structure.SqlTable;
+import net.codjo.database.common.impl.fixture.MapOrderListTransformer;
+import net.codjo.test.common.fixture.Fixture;
+
 import static junit.framework.Assert.assertEquals;
+import static net.codjo.database.common.api.structure.SqlTable.table;
 public abstract class JdbcFixture implements Fixture {
     private final DatabaseFactory databaseFactory = new DatabaseFactory();
     private final DatabaseHelper databaseHelper = databaseFactory.createDatabaseHelper();
@@ -180,15 +181,16 @@ public abstract class JdbcFixture implements Fixture {
                 Assert.assertNull("Expected empty but was not", actualValue);
                 return;
             }
-            int line = expectedValue.length;
             int columnCount = expectedValue[0].length;
 
-            for (int lineIndex = 0; lineIndex < line; lineIndex++) {
+            for (int rowIndex = 0; rowIndex < expectedValue.length; rowIndex++) {
                 for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
-                    assertEquals(expectedValue[lineIndex][columnIndex],
-                                 actualValue[lineIndex][columnIndex]);
+                    assertEquals(expectedValue[rowIndex][columnIndex], actualValue[rowIndex][columnIndex]);
                 }
+                Assert.assertEquals("On row[" + (rowIndex + 1) + "] column count",
+                                    expectedValue[rowIndex].length, actualValue[rowIndex].length);
             }
+            Assert.assertEquals("Total row count", expectedValue.length, actualValue.length);
         }
         catch (SQLException e) {
             throw new RuntimeSqlException(e);
@@ -288,6 +290,7 @@ public abstract class JdbcFixture implements Fixture {
         if (resultContent.isEmpty()) {
             return null;
         }
+        //noinspection ToArrayCallWithZeroLengthArrayArgument
         return resultContent.toArray(new String[][]{});
     }
 }

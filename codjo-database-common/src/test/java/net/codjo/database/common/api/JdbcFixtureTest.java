@@ -1,28 +1,31 @@
 package net.codjo.database.common.api;
-import static net.codjo.database.common.api.structure.SqlField.fieldName;
-import net.codjo.database.common.api.structure.SqlIndex;
-import static net.codjo.database.common.api.structure.SqlIndex.normalIndex;
-import net.codjo.database.common.api.structure.SqlTable;
-import static net.codjo.database.common.api.structure.SqlTable.table;
-import static net.codjo.database.common.api.structure.SqlTable.temporaryTable;
-import net.codjo.database.common.api.structure.SqlTrigger;
-import net.codjo.database.common.api.structure.SqlView;
-import static net.codjo.database.common.api.structure.SqlView.view;
-import net.codjo.test.common.fixture.DirectoryFixture;
-import net.codjo.util.file.FileUtil;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import junit.framework.AssertionFailedError;
+import net.codjo.database.common.api.structure.SqlIndex;
+import net.codjo.database.common.api.structure.SqlTable;
+import net.codjo.database.common.api.structure.SqlTrigger;
+import net.codjo.database.common.api.structure.SqlView;
+import net.codjo.test.common.fixture.DirectoryFixture;
+import net.codjo.util.file.FileUtil;
 import org.junit.After;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
+
+import static net.codjo.database.common.api.structure.SqlField.fieldName;
+import static net.codjo.database.common.api.structure.SqlIndex.normalIndex;
+import static net.codjo.database.common.api.structure.SqlTable.table;
+import static net.codjo.database.common.api.structure.SqlTable.temporaryTable;
+import static net.codjo.database.common.api.structure.SqlView.view;
+import static net.codjo.test.common.matcher.JUnitMatchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 public abstract class JdbcFixtureTest {
     protected DirectoryFixture directoryFixture = DirectoryFixture.newTemporaryDirectoryFixture();
     protected final DatabaseFactory databaseFactory = new DatabaseFactory();
@@ -107,6 +110,41 @@ public abstract class JdbcFixtureTest {
               {"3", "4"}
         };
         jdbcFixture.assertContent(table, content);
+    }
+
+
+    @Test
+    public void test_assertContent_failingDueToRowCountMismatch() throws SQLException {
+        jdbcFixture.create(table("JDBC_FIXTURE_TEST"), "COL1 varchar(5), COL2 varchar(5)");
+
+        jdbcFixture.executeUpdate("insert into JDBC_FIXTURE_TEST values ('1','2')");
+        jdbcFixture.executeUpdate("insert into JDBC_FIXTURE_TEST values ('3','4')");
+
+        try {
+            jdbcFixture.assertContent(table("JDBC_FIXTURE_TEST"), new String[][]{{"1", "2"}});
+        }
+        catch (AssertionFailedError ex) {
+            assertThat(ex.getMessage(), containsString("Total row count expected:<1> but was:<2>"));
+            return; // Ok
+        }
+        fail();
+    }
+
+
+    @Test
+    public void test_assertContent_failingDueToColumnCountMismatch() throws SQLException {
+        jdbcFixture.create(table("JDBC_FIXTURE_TEST"), "COL1 varchar(5), COL2 varchar(5)");
+
+        jdbcFixture.executeUpdate("insert into JDBC_FIXTURE_TEST values ('1','2')");
+
+        try {
+            jdbcFixture.assertContent(table("JDBC_FIXTURE_TEST"), new String[][]{{"1"}});
+        }
+        catch (AssertionFailedError ex) {
+            assertThat(ex.getMessage(), containsString("On row[1] column count expected:<1> but was:<2>"));
+            return; // Ok
+        }
+        fail();
     }
 
 
