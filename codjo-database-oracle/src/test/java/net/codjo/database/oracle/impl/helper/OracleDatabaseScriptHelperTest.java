@@ -3,12 +3,16 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import net.codjo.database.common.api.RuntimeSqlException;
 import net.codjo.database.common.api.structure.SqlConstraint;
+import net.codjo.database.common.api.structure.SqlConstraint.Type;
 import net.codjo.database.common.api.structure.SqlFieldDefinition;
 import net.codjo.database.common.api.structure.SqlTable;
 import net.codjo.database.common.api.structure.SqlTableDefinition;
 import net.codjo.database.common.impl.helper.AbstractDatabaseScriptHelperTest;
 import org.junit.Test;
 
+import static net.codjo.database.common.api.structure.SqlConstraint.foreignKey;
+import static net.codjo.database.common.api.structure.SqlField.field;
+import static net.codjo.database.common.api.structure.SqlField.fields;
 import static net.codjo.database.common.api.structure.SqlTable.table;
 import static net.codjo.test.common.matcher.JUnitMatchers.*;
 import static org.junit.Assert.assertEquals;
@@ -54,6 +58,31 @@ public class OracleDatabaseScriptHelperTest extends AbstractDatabaseScriptHelper
     @Override
     public void test_executeCreateTable_withIdentity() throws Exception {
         super.test_executeCreateTable_withIdentity();
+    }
+
+
+    @Override
+    protected SqlConstraint buildConstraint() {
+        create(table("AP_TOTO"), "PORTFOLIO_CODE varchar(6), AUTOMATIC_UPDATE varchar(6)");
+        create(table("AP_MERETOTO"), "ISIN_CODE varchar(6), AUTOMATIC_UPDATE varchar(6)");
+
+        create(buildUniqueConstraint(table("AP_MERETOTO")));
+
+        return foreignKey("FK_MERETOTO_TOTO",
+                          table("AP_TOTO"),
+                          fields("PORTFOLIO_CODE", "AUTOMATIC_UPDATE"),
+                          table("AP_MERETOTO"),
+                          fields("ISIN_CODE", "AUTOMATIC_UPDATE"));
+    }
+
+
+    private static SqlConstraint buildUniqueConstraint(SqlTable sqlTable) {
+        SqlConstraint constraint = SqlConstraint.constraintName("X1_TOTO");
+        constraint.setType(Type.UNIQUE);
+        constraint.setAlteredTable(sqlTable);
+        constraint.addLinkedFields(field("ISIN_CODE", ""), null);
+        constraint.addLinkedFields(field("AUTOMATIC_UPDATE", ""), null);
+        return constraint;
     }
 
 
@@ -187,19 +216,6 @@ public class OracleDatabaseScriptHelperTest extends AbstractDatabaseScriptHelper
         catch (SQLException e) {
             throw new RuntimeSqlException(e);
         }
-    }
-
-
-    @Override
-    protected void create(SqlConstraint constraint) {
-        try {
-            jdbcFixture.executeUpdate(
-                  "alter table AP_MERETOTO add (constraint fk_AP_MERETOTO primary key (ISIN_CODE, AUTOMATIC_UPDATE))");
-        }
-        catch (SQLException e) {
-            throw new RuntimeSqlException(e);
-        }
-        super.create(constraint);
     }
 
 

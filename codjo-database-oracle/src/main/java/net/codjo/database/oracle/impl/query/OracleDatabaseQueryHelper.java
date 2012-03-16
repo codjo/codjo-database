@@ -1,4 +1,6 @@
 package net.codjo.database.oracle.impl.query;
+import java.sql.Connection;
+import java.sql.SQLException;
 import net.codjo.database.common.impl.query.AbstractDatabaseQueryHelper;
 import net.codjo.database.common.impl.query.builder.AbstractAlterTableQueryBuilder;
 import net.codjo.database.common.impl.query.builder.AbstractCreateConstraintQueryBuilder;
@@ -10,8 +12,6 @@ import net.codjo.database.common.impl.query.builder.AbstractDropTableQueryBuilde
 import net.codjo.database.common.impl.query.builder.AbstractInsertQueryBuilder;
 import net.codjo.database.common.impl.query.builder.AbstractSelectQueryBuilder;
 import net.codjo.database.common.impl.query.builder.AbstractUpdateQueryBuilder;
-import net.codjo.database.common.impl.query.builder.DefaultCreateConstraintQueryBuilder;
-import net.codjo.database.common.impl.query.builder.DefaultCreateIndexQueryBuilder;
 import net.codjo.database.common.impl.query.builder.DefaultCreateViewQueryBuilder;
 import net.codjo.database.common.impl.query.builder.DefaultDropConstraintQueryBuilder;
 import net.codjo.database.common.impl.query.builder.DefaultDropTableQueryBuilder;
@@ -20,9 +20,9 @@ import net.codjo.database.common.impl.query.builder.DefaultSelectQueryBuilder;
 import net.codjo.database.common.impl.query.builder.DefaultUpdateQueryBuilder;
 import net.codjo.database.common.impl.query.runner.DefaultRowCountStrategy;
 import net.codjo.database.common.impl.query.runner.RowCountStrategy;
+import net.codjo.database.oracle.impl.query.builder.OracleCreateConstraintQueryBuilder;
+import net.codjo.database.oracle.impl.query.builder.OracleCreateIndexQueryBuilder;
 import net.codjo.database.oracle.impl.query.builder.OracleCreateTableQueryBuilder;
-import java.sql.Connection;
-import java.sql.SQLException;
 public class OracleDatabaseQueryHelper extends AbstractDatabaseQueryHelper {
 
     @Override
@@ -69,7 +69,7 @@ public class OracleDatabaseQueryHelper extends AbstractDatabaseQueryHelper {
 
     @Override
     protected AbstractCreateIndexQueryBuilder newCreateIndexQueryBuilder() {
-        return new DefaultCreateIndexQueryBuilder();
+        return new OracleCreateIndexQueryBuilder();
     }
 
 
@@ -81,7 +81,7 @@ public class OracleDatabaseQueryHelper extends AbstractDatabaseQueryHelper {
 
     @Override
     protected AbstractCreateConstraintQueryBuilder newCreateConstraintQueryBuilder() {
-        return new DefaultCreateConstraintQueryBuilder();
+        return new OracleCreateConstraintQueryBuilder();
     }
 
 

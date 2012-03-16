@@ -109,9 +109,6 @@ public class OracleDatabaseScriptHelper extends AbstractDatabaseScriptHelper {
     @Override
     public String buildCreateConstraintScript(SqlConstraint constraint) {
         return new StringBuilder()
-              .append(buildCreatePrimaryKeyQuery(constraint.getReferencedTable(),
-                                                 constraint.getLinkedFields())).append(";\n")
-              .append("\n")
               .append(getQueryHelper().buildCreateConstraintQuery(constraint)).append(";\n")
               .toString();
     }
