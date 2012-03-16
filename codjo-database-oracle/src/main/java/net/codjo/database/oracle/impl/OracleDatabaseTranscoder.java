@@ -7,7 +7,7 @@ public class OracleDatabaseTranscoder extends DefaultDatabaseTranscoder {
         addSqlFieldType(DATETIME, "timestamp");
         addSqlFieldType("text", "varchar2(4000)");
         addSqlFieldType("bit", "number(1)");
-//        addSqlFieldType("varchar", "varchar2");
+        addSqlFieldType("varchar", "varchar2");
 
         addSqlFieldDefault(NOW, "systimestamp");
     }
