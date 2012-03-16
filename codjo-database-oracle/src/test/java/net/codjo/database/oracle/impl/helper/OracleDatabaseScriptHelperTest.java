@@ -36,7 +36,7 @@ public class OracleDatabaseScriptHelperTest extends AbstractDatabaseScriptHelper
         String definition = scriptHelper.buildCreateTableScript(table);
 
         assertThat(cleanUp(definition), is("create table AP_TABLE("
-                                           + "    \"COMMENT\"      varchar(15)  null"
+                                           + "    \"COMMENT\"      varchar2(15)  null"
                                            + " constraint CKC_COMMENT check (\"COMMENT\" in ('A','B'))"
                                            + ");"));
     }
@@ -63,8 +63,8 @@ public class OracleDatabaseScriptHelperTest extends AbstractDatabaseScriptHelper
 
     @Override
     protected SqlConstraint buildConstraint() {
-        create(table("AP_TOTO"), "PORTFOLIO_CODE varchar(6), AUTOMATIC_UPDATE varchar(6)");
-        create(table("AP_MERETOTO"), "ISIN_CODE varchar(6), AUTOMATIC_UPDATE varchar(6)");
+        create(table("AP_TOTO"), "PORTFOLIO_CODE varchar2(6), AUTOMATIC_UPDATE varchar2(6)");
+        create(table("AP_MERETOTO"), "ISIN_CODE varchar2(6), AUTOMATIC_UPDATE varchar2(6)");
 
         create(buildUniqueConstraint(table("AP_MERETOTO")));
 
