@@ -25,6 +25,25 @@ public class OracleDatabaseScriptHelperTest extends AbstractDatabaseScriptHelper
 
 
     @Test
+    public void test_createTable_withSequence() throws Exception {
+        //TODO[Oracle support] test a finir
+        SqlTableDefinition table = new SqlTableDefinition("AP_TABLE");
+        SqlFieldDefinition comment = new SqlFieldDefinition("COMMENT");
+        comment.setType("varchar");
+        comment.setPrecision("15");
+        comment.setCheck("'A','B'");
+        table.setSqlFieldDefinitions(Arrays.asList(comment));
+
+        String definition = scriptHelper.buildCreateTableScript(table);
+
+        assertThat(cleanUp(definition), is("create table AP_TABLE("
+                                           + "    \"COMMENT\"      varchar2(15)  null"
+                                           + " constraint CKC_COMMENT check (\"COMMENT\" in ('A','B'))"
+                                           + ");"));
+    }
+
+
+    @Test
     public void test_createTable_withReservedKeyword() throws Exception {
         SqlTableDefinition table = new SqlTableDefinition("AP_TABLE");
         SqlFieldDefinition comment = new SqlFieldDefinition("COMMENT");
