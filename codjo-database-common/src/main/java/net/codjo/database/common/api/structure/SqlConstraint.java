@@ -7,6 +7,13 @@ public class SqlConstraint extends AbstractSqlObject {
     private SqlTable alteredTable;
     private SqlTable referencedTable;
     private final List<SqlField[]> linkedFields = new ArrayList<SqlField[]>();
+    private Type type = Type.PRIMARY;
+
+    public enum Type {
+        UNIQUE,
+        FOREIGN,
+        PRIMARY
+    }
 
 
     protected SqlConstraint() {
@@ -71,7 +78,9 @@ public class SqlConstraint extends AbstractSqlObject {
 
 
     public static SqlConstraint foreignKey(String name, SqlTable alteredTable) {
-        return new SqlConstraint(name, alteredTable);
+        SqlConstraint sqlConstraint = new SqlConstraint(name, alteredTable);
+        sqlConstraint.setType(Type.FOREIGN);
+        return sqlConstraint;
     }
 
 
@@ -87,6 +96,17 @@ public class SqlConstraint extends AbstractSqlObject {
             constraint.addLinkedFields(alteredFields[i], referencedFields[i]);
         }
         constraint.setReferencedTable(referencedTable);
+        constraint.setType(Type.FOREIGN);
         return constraint;
+    }
+
+
+    public Type getType() {
+        return type;
+    }
+
+
+    public void setType(Type type) {
+        this.type = type;
     }
 }
