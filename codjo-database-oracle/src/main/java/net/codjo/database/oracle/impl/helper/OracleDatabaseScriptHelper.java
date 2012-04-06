@@ -16,6 +16,35 @@ public class OracleDatabaseScriptHelper extends AbstractDatabaseScriptHelper {
     public OracleDatabaseScriptHelper(DatabaseQueryHelper databaseQueryHelper,
                                       DatabaseTranscoder databaseTranscoder) {
         super(databaseQueryHelper, databaseTranscoder, ";");
+        registerCustomScript("createSequence", new CustomScript() {
+            public String buildScript(Object... parameters) {
+                SqlTable table = (SqlTable)parameters[0];
+                return buildSequenceScript(table);
+            }
+        });
+        registerCustomScript("createTriggerForSequence", new CustomScript() {
+            public String buildScript(Object... parameters) {
+                SqlTable table = (SqlTable)parameters[0];
+                String identityField = (String)parameters[1];
+                return buildTriggerSequenceScript(table, identityField, getSequenceName(table));
+            }
+        });
+    }
+
+
+    private String buildTriggerSequenceScript(SqlTable table, String identityField, String sequenceName) {
+        StringBuilder sqlContent =
+              new StringBuilder("if :new.").append(identityField).append(" is null then\n    select ")
+                    .append(sequenceName).append(".nextval into :new.").append(identityField)
+                    .append(" from dual;\nend if;\n");
+        SqlTrigger trigger = SqlTrigger.insertTrigger("TR_" + table.getName() + "_SEQ", table, sqlContent.toString());
+
+        String result = new StringBuilder()
+              .append(buildTriggerScriptBeginPart(trigger))
+              .append(sqlContent)
+              .append(buildTriggerScriptEndPart(trigger)).toString();
+
+        return result.replaceAll("after insert", "before insert");
     }
 
 
@@ -45,6 +74,24 @@ public class OracleDatabaseScriptHelper extends AbstractDatabaseScriptHelper {
 
     public String buildDropTableScript(SqlTable table) {
         return dropObject("Table", table.getName());
+    }
+
+
+    private String buildSequenceScript(SqlTable table) {
+        String sequenceName = getSequenceName(table);
+        return new StringBuilder().append(dropObject("Sequence", sequenceName))
+              .append("/\n\n")
+              .append("create sequence ")
+              .append(sequenceName)
+              .append(
+                    getQueryDelimiter())
+              .append("\n")
+              .toString();
+    }
+
+
+    private String getSequenceName(SqlTable table) {
+        return "SEQ_" + table.getName();
     }
 
 
