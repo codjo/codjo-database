@@ -25,6 +25,21 @@ public class OracleDatabaseScriptHelperTest extends AbstractDatabaseScriptHelper
 
 
     @Test
+    public void test_createSequence() throws Exception {
+        assertEquals(loadFileContent("sequence/createSequence_etalon.sql"),
+                     scriptHelper.buildCustomScript("createSequence", table("AP_TOTO")));
+    }
+
+
+    @Test
+    public void test_createTriggerForSequence() throws Exception {
+        assertEquals(loadFileContent("trigger/createTriggerForSequence_etalon.sql"),
+                     scriptHelper.buildCustomScript("createTriggerForSequence", table("AP_TOTO"), "QUARANTINE_ID",
+                                                    "SEQUENCE"));
+    }
+
+
+    @Test
     public void test_createTable_withReservedKeyword() throws Exception {
         SqlTableDefinition table = new SqlTableDefinition("AP_TABLE");
         SqlFieldDefinition comment = new SqlFieldDefinition("COMMENT");

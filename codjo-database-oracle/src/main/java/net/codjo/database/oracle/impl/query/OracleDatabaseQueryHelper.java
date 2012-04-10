@@ -15,7 +15,6 @@ import net.codjo.database.common.impl.query.builder.AbstractUpdateQueryBuilder;
 import net.codjo.database.common.impl.query.builder.DefaultCreateViewQueryBuilder;
 import net.codjo.database.common.impl.query.builder.DefaultDropConstraintQueryBuilder;
 import net.codjo.database.common.impl.query.builder.DefaultDropTableQueryBuilder;
-import net.codjo.database.common.impl.query.builder.DefaultInsertQueryBuilder;
 import net.codjo.database.common.impl.query.builder.DefaultSelectQueryBuilder;
 import net.codjo.database.common.impl.query.builder.DefaultUpdateQueryBuilder;
 import net.codjo.database.common.impl.query.runner.DefaultRowCountStrategy;
@@ -23,6 +22,7 @@ import net.codjo.database.common.impl.query.runner.RowCountStrategy;
 import net.codjo.database.oracle.impl.query.builder.OracleCreateConstraintQueryBuilder;
 import net.codjo.database.oracle.impl.query.builder.OracleCreateIndexQueryBuilder;
 import net.codjo.database.oracle.impl.query.builder.OracleCreateTableQueryBuilder;
+import net.codjo.database.oracle.impl.query.builder.OracleInsertQueryBuilder;
 public class OracleDatabaseQueryHelper extends AbstractDatabaseQueryHelper {
 
     @Override
@@ -51,7 +51,7 @@ public class OracleDatabaseQueryHelper extends AbstractDatabaseQueryHelper {
 
     @Override
     protected AbstractInsertQueryBuilder newInsertQueryBuilder() {
-        return new DefaultInsertQueryBuilder();
+        return new OracleInsertQueryBuilder();
     }
 
 

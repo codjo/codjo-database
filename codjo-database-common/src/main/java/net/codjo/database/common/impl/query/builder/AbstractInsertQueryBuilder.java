@@ -1,9 +1,9 @@
 package net.codjo.database.common.impl.query.builder;
-import net.codjo.database.common.api.structure.SqlField;
-import net.codjo.database.common.api.structure.SqlTable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import net.codjo.database.common.api.structure.SqlField;
+import net.codjo.database.common.api.structure.SqlTable;
 public abstract class AbstractInsertQueryBuilder extends AbstractQueryBuilder {
     protected SqlTable table;
     protected final List<SqlField> fields = new ArrayList<SqlField>();
@@ -26,10 +26,10 @@ public abstract class AbstractInsertQueryBuilder extends AbstractQueryBuilder {
         StringBuilder insert = new StringBuilder()
               .append("insert into ").append(getTableName()).append(" ");
         SqlField firstField = fields.get(0);
-        if (firstField.getName() != null) {
+        if (formatFieldName(firstField) != null) {
             insert.append("( ");
             for (SqlField field : fields) {
-                insert.append(field.getName()).append(", ");
+                insert.append(formatFieldName(field)).append(", ");
             }
             insert.delete(insert.length() - 2, insert.length());
             insert.append(" ) ");

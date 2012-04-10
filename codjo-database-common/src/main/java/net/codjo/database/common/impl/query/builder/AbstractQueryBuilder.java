@@ -12,4 +12,9 @@ public abstract class AbstractQueryBuilder {
         }
         return value.toString();
     }
+
+
+    protected String formatFieldName(SqlField sqlField) {
+        return sqlField.getName();
+    }
 }
