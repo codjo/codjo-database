@@ -82,7 +82,7 @@ public abstract class AbstractDatabaseHelperTest {
     public void test_truncateTable() throws Exception {
         SqlTable table = table("MY_TABLE");
         createFillAndTruncateTable(table);
-        jdbcFixture.assertContent(table, null);
+        jdbcFixture.assertIsEmpty(table);
     }
 
 
@@ -90,7 +90,7 @@ public abstract class AbstractDatabaseHelperTest {
     public void test_truncateTable_temporaryTable() throws Exception {
         SqlTable table = temporaryTable("MY_TABLE");
         createFillAndTruncateTable(table);
-        jdbcFixture.assertContent(table, null);
+        jdbcFixture.assertIsEmpty(table);
     }
 
 
@@ -142,7 +142,7 @@ public abstract class AbstractDatabaseHelperTest {
 
 
     @Test(expected = RuntimeException.class)
-    public void test_createApplicationConnectionMetadata_noProperties() throws Exception {
+    public void test_createApplicationConnectionMetadata_noProp() throws Exception {
         databaseHelper.createApplicationConnectionMetadata();
     }
 

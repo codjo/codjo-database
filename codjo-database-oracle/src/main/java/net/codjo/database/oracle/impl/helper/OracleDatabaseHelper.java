@@ -76,6 +76,21 @@ public class OracleDatabaseHelper extends AbstractDatabaseHelper {
     }
 
 
+    @Override
+    public boolean isIdentityInsertAllowed() {
+        return true;
+    }
+
+
+    @Override
+    public void setIdentityInsert(Connection connection,
+                                  String catalog,
+                                  String tableName,
+                                  boolean temporaryTable,
+                                  boolean identityInsert) throws SQLException {
+    }
+
+
     // TODO commonaliser avec jdbcFixture.isUserInGroup
     public void changeUserGroup(Connection connection, String userName, String groupName)
           throws SQLException {
