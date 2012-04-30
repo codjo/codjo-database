@@ -46,22 +46,13 @@ public class OracleDatabaseHelper extends AbstractDatabaseHelper {
             return;
         }
 
-        List<String> constraints = getUniqueConstraints(connection, table.getName());
-        Map<String, String> foreignKeys = getLinkedForeignKeys(connection, constraints);
-
-        enabledForeignKeys(connection, foreignKeys, false);
-        enabledUniqueConstraints(connection, table.getName(), constraints, false);
-
         Statement statement = connection.createStatement();
         try {
-            statement.executeUpdate("truncate table " + table.getName());
+            statement.executeUpdate("delete from " + table.getName());
         }
         finally {
             statement.close();
         }
-
-        enabledUniqueConstraints(connection, table.getName(), constraints, true);
-        enabledForeignKeys(connection, foreignKeys, true);
     }
 
 
