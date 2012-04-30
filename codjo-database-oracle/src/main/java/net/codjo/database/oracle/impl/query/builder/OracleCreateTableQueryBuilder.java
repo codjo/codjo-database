@@ -12,7 +12,7 @@ public class OracleCreateTableQueryBuilder extends AbstractCreateTableQueryBuild
         create.append("table ").append(table.getName())
               .append(" ( ").append(content).append(" )");
         if (table.isTemporary()) {
-            create.append(" on commit preserve rows");
+            create.append(" on commit delete rows");
         }
         return create.toString();
     }

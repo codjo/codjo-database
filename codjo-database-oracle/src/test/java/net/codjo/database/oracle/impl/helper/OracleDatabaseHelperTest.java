@@ -1,5 +1,6 @@
 package net.codjo.database.oracle.impl.helper;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -42,7 +43,7 @@ public class OracleDatabaseHelperTest extends AbstractDatabaseHelperTest {
     public void test_dropForeignKey() throws Exception {
         jdbcFixture.drop(table("JDBC_TEST_1"));
         jdbcFixture.drop(table("JDBC_FIXTURE_TEST"));
-        
+
         jdbcFixture.create(table("JDBC_TEST_1"), "COL_A varchar(5)");
         jdbcFixture.create(table("JDBC_FIXTURE_TEST"), "COL_A varchar(5) constraint UN_COL_A unique");
         jdbcFixture.executeUpdate("alter table JDBC_TEST_1 add constraint FK_1 foreign key (COL_A) "
@@ -83,7 +84,8 @@ public class OracleDatabaseHelperTest extends AbstractDatabaseHelperTest {
               "alter table AP_BOOK add constraint FK_AUTH_BOOK foreign key (AUTHOR) references REF_AUTHOR (AUTHOR)");
 
         // Grant
-        jdbcFixture.executeUpdate("grant select, insert, delete, update, references on AP_BOOK                         to APP_USER");
+        jdbcFixture.executeUpdate(
+              "grant select, insert, delete, update, references on AP_BOOK                         to APP_USER");
 
         // Drop FK
         databaseHelper.dropAllObjects(jdbcFixture.getConnection());
@@ -239,6 +241,20 @@ public class OracleDatabaseHelperTest extends AbstractDatabaseHelperTest {
         }
         catch (SQLException exception) {
             ;
+        }
+    }
+
+
+    @Override
+    public void test_truncateTable_temporaryTable() throws Exception {
+        Connection connection = super.jdbcFixture.getConnection();
+        connection.setAutoCommit(false);
+        try {
+            super.test_truncateTable_temporaryTable();
+        }
+        finally {
+            connection.commit();
+            connection.setAutoCommit(true);
         }
     }
 }
