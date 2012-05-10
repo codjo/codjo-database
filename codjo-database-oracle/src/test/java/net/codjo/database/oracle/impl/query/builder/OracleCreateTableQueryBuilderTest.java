@@ -12,7 +12,7 @@ public class OracleCreateTableQueryBuilderTest extends AbstractCreateTableQueryB
 
     @Override
     protected String getCreateTemporaryTableQuery() {
-        return "create global temporary table MA_TABLE ( COL1 varchar(255) ) on commit preserve rows";
+        return "create global temporary table MA_TABLE ( COL1 varchar(255) ) on commit delete rows";
     }
 
 
