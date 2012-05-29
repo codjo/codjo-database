@@ -26,6 +26,12 @@ import net.codjo.database.oracle.impl.query.builder.OracleInsertQueryBuilder;
 public class OracleDatabaseQueryHelper extends AbstractDatabaseQueryHelper {
 
     @Override
+    public boolean hasDeleteRowStrategyOnTemporaryTable() {
+        return true;
+    }
+
+
+    @Override
     protected AbstractSelectQueryBuilder newSelectQueryBuilder() {
         return new DefaultSelectQueryBuilder();
     }
@@ -39,7 +45,7 @@ public class OracleDatabaseQueryHelper extends AbstractDatabaseQueryHelper {
 
     @Override
     protected AbstractCreateTableQueryBuilder newCreateTableQueryBuilder() {
-        return new OracleCreateTableQueryBuilder();
+        return new OracleCreateTableQueryBuilder(hasDeleteRowStrategyOnTemporaryTable());
     }
 
 

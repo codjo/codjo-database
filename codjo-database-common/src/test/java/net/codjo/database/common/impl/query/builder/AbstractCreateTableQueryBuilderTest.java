@@ -41,20 +41,8 @@ public abstract class AbstractCreateTableQueryBuilderTest {
         assertEquals(getCreateTemporaryTableQuery(), queryBuilder.get());
     }
 
-
     @Test
-    public void test_hasDeleteRowStrategy_table() throws Exception {
-        getQueryBuilder()
-              .table(table("MA_TABLE"));
-        assertFalse(getQueryBuilder().hasDeleteRowStrategy());
-    }
-
-
-    @Test
-    public void test_hasDeleteRowStrategy_temporaryTable() throws Exception {
-        getQueryBuilder()
-              .table(temporaryTable("MA_TABLE"))
-              .withContent("COL1 varchar(255)");
+    public void test_hasDeleteRowStrategy() throws Exception {
         assertFalse(getQueryBuilder().hasDeleteRowStrategy());
     }
 

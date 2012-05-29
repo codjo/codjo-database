@@ -136,7 +136,7 @@ public abstract class AbstractDatabaseQueryHelper implements DatabaseQueryHelper
 
 
     public boolean hasDeleteRowStrategyOnTemporaryTable() {
-        return newCreateTableQueryBuilder().hasDeleteRowStrategy();
+        return false;
     }
 
 

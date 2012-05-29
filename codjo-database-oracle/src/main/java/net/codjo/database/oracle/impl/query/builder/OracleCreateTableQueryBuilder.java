@@ -1,11 +1,19 @@
 package net.codjo.database.oracle.impl.query.builder;
 import net.codjo.database.common.impl.query.builder.AbstractCreateTableQueryBuilder;
 public class OracleCreateTableQueryBuilder extends AbstractCreateTableQueryBuilder {
+    private boolean deleteRowStrategy;
+
+
+    public OracleCreateTableQueryBuilder(boolean deleteRowStrategy) {
+        this.deleteRowStrategy = deleteRowStrategy;
+    }
+
 
     @Override
     public boolean hasDeleteRowStrategy() {
-        return table.isTemporary();
+        return deleteRowStrategy;
     }
+
 
     @Override
     public String get() {
@@ -16,7 +24,7 @@ public class OracleCreateTableQueryBuilder extends AbstractCreateTableQueryBuild
         }
         create.append("table ").append(table.getName())
               .append(" ( ").append(content).append(" )");
-        if (hasDeleteRowStrategy()) {
+        if (table.isTemporary() && hasDeleteRowStrategy()) {
             create.append(" on commit delete rows");
         }
         return create.toString();

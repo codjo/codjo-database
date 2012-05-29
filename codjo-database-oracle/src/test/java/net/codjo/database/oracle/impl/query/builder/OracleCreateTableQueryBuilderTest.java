@@ -3,13 +3,15 @@ import net.codjo.database.common.impl.query.builder.AbstractCreateTableQueryBuil
 import net.codjo.database.common.impl.query.builder.AbstractCreateTableQueryBuilderTest;
 import org.junit.Test;
 
-import static net.codjo.database.common.api.structure.SqlTable.temporaryTable;
-import static org.junit.Assert.assertTrue;
+import static net.codjo.test.common.matcher.JUnitMatchers.*;
+import static org.junit.Assert.assertThat;
 public class OracleCreateTableQueryBuilderTest extends AbstractCreateTableQueryBuilderTest {
+    static final boolean DELETE_ROW_STRATEGY = true;
+
 
     @Override
     protected AbstractCreateTableQueryBuilder createQueryBuilder() {
-        return new OracleCreateTableQueryBuilder();
+        return new OracleCreateTableQueryBuilder(DELETE_ROW_STRATEGY);
     }
 
 
@@ -25,10 +27,7 @@ public class OracleCreateTableQueryBuilderTest extends AbstractCreateTableQueryB
 
 
     @Override
-    public void test_hasDeleteRowStrategy_temporaryTable() throws Exception {
-        getQueryBuilder()
-              .table(temporaryTable("MA_TABLE"))
-              .withContent("COL1 varchar(255)");
-        assertTrue(getQueryBuilder().hasDeleteRowStrategy());
+    public void test_hasDeleteRowStrategy() throws Exception {
+        assertThat(getQueryBuilder().hasDeleteRowStrategy(), is(DELETE_ROW_STRATEGY));
     }
 }
