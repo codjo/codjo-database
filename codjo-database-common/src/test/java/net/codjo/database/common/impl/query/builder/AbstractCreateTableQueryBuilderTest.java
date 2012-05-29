@@ -1,9 +1,11 @@
 package net.codjo.database.common.impl.query.builder;
+import org.junit.Before;
+import org.junit.Test;
+
 import static net.codjo.database.common.api.structure.SqlTable.table;
 import static net.codjo.database.common.api.structure.SqlTable.temporaryTable;
 import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertFalse;
 public abstract class AbstractCreateTableQueryBuilderTest {
     private AbstractCreateTableQueryBuilder queryBuilder;
 
@@ -37,6 +39,23 @@ public abstract class AbstractCreateTableQueryBuilderTest {
               .table(temporaryTable("MA_TABLE"))
               .withContent("COL1 varchar(255)");
         assertEquals(getCreateTemporaryTableQuery(), queryBuilder.get());
+    }
+
+
+    @Test
+    public void test_hasDeleteRowStrategy_table() throws Exception {
+        getQueryBuilder()
+              .table(table("MA_TABLE"));
+        assertFalse(getQueryBuilder().hasDeleteRowStrategy());
+    }
+
+
+    @Test
+    public void test_hasDeleteRowStrategy_temporaryTable() throws Exception {
+        getQueryBuilder()
+              .table(temporaryTable("MA_TABLE"))
+              .withContent("COL1 varchar(255)");
+        assertFalse(getQueryBuilder().hasDeleteRowStrategy());
     }
 
 
