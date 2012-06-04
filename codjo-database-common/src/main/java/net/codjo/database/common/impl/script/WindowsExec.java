@@ -1,11 +1,11 @@
 package net.codjo.database.common.impl.script;
-import net.codjo.database.common.impl.FileUtil;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import net.codjo.util.file.FileUtil;
 /**
  * Executes une commande. Une instance de <code>WindowsExec</code> peut être réutilisé pour executer plusieurs
  * commande de manière sequentiel.
