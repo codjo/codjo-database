@@ -1,4 +1,6 @@
 package net.codjo.database.common.api;
+import java.sql.Connection;
+import java.sql.SQLException;
 import net.codjo.database.common.api.confidential.query.PreparedSelectQuery;
 import net.codjo.database.common.api.confidential.query.SelectQuery;
 import net.codjo.database.common.api.structure.SqlConstraint;
@@ -6,8 +8,6 @@ import net.codjo.database.common.api.structure.SqlField;
 import net.codjo.database.common.api.structure.SqlIndex;
 import net.codjo.database.common.api.structure.SqlTable;
 import net.codjo.database.common.api.structure.SqlView;
-import java.sql.Connection;
-import java.sql.SQLException;
 public interface DatabaseQueryHelper {
     enum SelectType {
         ONE,
@@ -66,6 +66,9 @@ public interface DatabaseQueryHelper {
 
 
     String buildCreateConstraintQuery(SqlConstraint sqlConstraint);
+
+
+    boolean hasDeleteRowStrategyOnTemporaryTable();
 
 
     Confidential confidential();
