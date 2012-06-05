@@ -6,7 +6,7 @@ public class SybaseCreateTableQueryBuilder extends AbstractCreateTableQueryBuild
     public String get() {
         StringBuilder create = new StringBuilder().
               append("create table ");
-        if (table.isTemporary()) {
+        if (table.isTemporary() && !table.getName().startsWith("#")) {
             create.append("#");
         }
         return create
