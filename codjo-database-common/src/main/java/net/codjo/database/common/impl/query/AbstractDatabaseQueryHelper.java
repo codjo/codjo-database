@@ -135,6 +135,11 @@ public abstract class AbstractDatabaseQueryHelper implements DatabaseQueryHelper
     }
 
 
+    public boolean hasDeleteRowStrategyOnTemporaryTable() {
+        return false;
+    }
+
+
     protected abstract AbstractSelectQueryBuilder newSelectQueryBuilder();
 
 

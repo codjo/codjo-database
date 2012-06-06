@@ -15,4 +15,8 @@ public abstract class AbstractCreateTableQueryBuilder extends AbstractQueryBuild
         this.content = tableContent;
         return this;
     }
+
+    public boolean hasDeleteRowStrategy() {
+        return false;
+    }
 }

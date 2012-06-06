@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import net.codjo.database.common.api.ConnectionMetadata;
 import net.codjo.database.common.api.ExecSqlScript;
-import net.codjo.database.common.impl.FileUtil;
+import net.codjo.util.file.FileUtil;
 
 public abstract class AbstractExecSqlScript implements ExecSqlScript {
     private static final String NEW_LINE = System.getProperty("line.separator");
@@ -93,19 +93,11 @@ public abstract class AbstractExecSqlScript implements ExecSqlScript {
 
 
     private String[] getScriptsFrom(String fileName) {
-        String contentOfFile;
-        try {
-            contentOfFile = FileUtil.loadContent(new File(fileName));
-        }
-        catch (IOException e) {
-            throw new RuntimeException("Impossible de lire le fichier " + fileName, e);
-        }
-        if ("".equals(contentOfFile)) {
+        String[] contentOfFile = FileUtil.loadContentAsLines(new File(fileName));
+        if (contentOfFile.length == 0) {
             logger.log("Le fichier " + fileName + " est vide !");
-            return new String[]{};
         }
-
-        return contentOfFile.split("[\r\n]+");
+        return contentOfFile;
     }
 
 
