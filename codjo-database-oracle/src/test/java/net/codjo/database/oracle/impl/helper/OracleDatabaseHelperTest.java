@@ -41,8 +41,8 @@ public class OracleDatabaseHelperTest extends AbstractDatabaseHelperTest {
 
     @Test
     public void test_dropForeignKey() throws Exception {
-        jdbcFixture.dropWithException(table("JDBC_TEST_1"));
-        jdbcFixture.dropWithException(table("JDBC_FIXTURE_TEST"));
+        jdbcFixture.drop(table("JDBC_TEST_1"));
+        jdbcFixture.drop(table("JDBC_FIXTURE_TEST"));
 
         jdbcFixture.create(table("JDBC_TEST_1"), "COL_A varchar(5)");
         jdbcFixture.create(table("JDBC_FIXTURE_TEST"), "COL_A varchar(5) constraint UN_COL_A unique");
@@ -63,8 +63,8 @@ public class OracleDatabaseHelperTest extends AbstractDatabaseHelperTest {
 
     @Test
     public void test_dropForeignKey_bug() throws Exception {
-        jdbcFixture.drop(table("AP_BOOK"));
-        jdbcFixture.drop(table("REF_AUTHOR"));
+        jdbcFixture.dropWithException(table("AP_BOOK"));
+        jdbcFixture.dropWithException(table("REF_AUTHOR"));
 
         jdbcFixture.executeUpdate("create table AP_BOOK ( "
                                   + "    TITLE      varchar(255)  not null, "
