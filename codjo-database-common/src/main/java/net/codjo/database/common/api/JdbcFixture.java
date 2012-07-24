@@ -159,6 +159,11 @@ public abstract class JdbcFixture implements Fixture {
     }
 
 
+    public void dropWithException(SqlTable table) throws SQLException {
+        executeUpdate(queryHelper.buildDropTableQuery(table));
+    }
+
+
     public void assertIsEmpty(SqlTable table) {
         assertContent(table, null);
     }
