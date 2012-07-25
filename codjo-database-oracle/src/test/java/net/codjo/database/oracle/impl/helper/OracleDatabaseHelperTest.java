@@ -64,8 +64,8 @@ public class OracleDatabaseHelperTest extends AbstractDatabaseHelperTest {
 
     @Test
     public void test_dropForeignKey_bug() throws Exception {
-        jdbcFixture.dropWithException(table("AP_BOOK"));
-        jdbcFixture.dropWithException(table("REF_AUTHOR"));
+        jdbcFixture.drop(table("AP_BOOK"));
+        jdbcFixture.drop(table("REF_AUTHOR"));
 
         jdbcFixture.executeUpdate("create table AP_BOOK ( "
                                   + "    TITLE      varchar(255)  not null, "
