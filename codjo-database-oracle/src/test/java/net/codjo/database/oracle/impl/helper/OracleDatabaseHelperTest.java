@@ -11,6 +11,7 @@ import net.codjo.database.common.api.structure.SqlConstraint;
 import net.codjo.database.common.api.structure.SqlTable;
 import net.codjo.database.common.impl.helper.AbstractDatabaseHelperTest;
 import net.codjo.database.oracle.impl.query.OracleDatabaseQueryHelper;
+import org.junit.Before;
 import org.junit.Test;
 
 import static net.codjo.database.common.api.structure.SqlConstraint.foreignKey;
@@ -256,5 +257,13 @@ public class OracleDatabaseHelperTest extends AbstractDatabaseHelperTest {
             connection.commit();
             connection.setAutoCommit(true);
         }
+    }
+
+
+    @Before
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        jdbcFixture.advanced().dropAllObjects();
     }
 }

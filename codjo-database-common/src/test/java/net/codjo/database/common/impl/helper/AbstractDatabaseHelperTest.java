@@ -45,7 +45,6 @@ public abstract class AbstractDatabaseHelperTest {
     public void setUp() throws Exception {
         jdbcFixture = createJdbcFixture();
         jdbcFixture.doSetUp();
-        jdbcFixture.advanced().dropAllObjects();
     }
 
 
