@@ -159,8 +159,15 @@ public abstract class JdbcFixture implements Fixture {
     }
 
 
-    public void dropWithException(SqlTable table) throws SQLException {
-        executeUpdate(queryHelper.buildDropTableQuery(table));
+    public void dropWithException(SqlTable table) throws Exception {
+        try {
+            executeUpdate(queryHelper.buildDropTableQuery(table));
+        }
+        catch (Exception e) {
+            if (!e.getLocalizedMessage().contains("Table ou vue inexistante")) {
+                throw e;
+            }
+        }
     }
 
 
