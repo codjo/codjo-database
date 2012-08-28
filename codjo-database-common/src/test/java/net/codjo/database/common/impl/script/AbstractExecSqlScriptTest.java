@@ -187,7 +187,7 @@ public abstract class AbstractExecSqlScriptTest {
             fail("Script inexistant");
         }
         catch (Exception ex) {
-            jdbcFixture.assertContent(SqlTable.table("AP_TEST"), new String[][]{{"TABLE"}});
+            jdbcFixture.assertContent(SqlTable.table("AP_TEST"), null);
         }
     }
 

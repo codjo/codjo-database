@@ -221,7 +221,7 @@ public abstract class AbstractDatabaseScriptHelper implements DatabaseScriptHelp
     protected abstract String buildTriggerScriptCheckRecordPart(SqlTrigger trigger);
 
 
-    private String buildTriggerScript(SqlTrigger trigger, String centralPart) {
+    protected String buildTriggerScript(SqlTrigger trigger, String centralPart) {
         return new StringBuilder()
               .append(buildTriggerScriptBeginPart(trigger))
               .append(centralPart)

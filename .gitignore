@@ -8,4 +8,4 @@ MTPs-*.*
 pom.xml.*
 release.properties
 .DS_Store
-sqlnet.log
+*.log

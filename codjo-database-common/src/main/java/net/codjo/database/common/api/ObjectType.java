@@ -1,13 +1,14 @@
 package net.codjo.database.common.api;
-public final class ObjectType {
-    public static final ObjectType VIEW = new ObjectType("V", "view");
-    public static final ObjectType TABLE = new ObjectType("U", "table");
-    public static final ObjectType STORED_PROCEDURE = new ObjectType("P", "procedure");
-    public static final ObjectType DEFAULT = new ObjectType("D", "default");
-    public static final ObjectType RULE = new ObjectType("R", "rule");
-    public static final ObjectType TRIGGER = new ObjectType("TR", "trigger");
+public enum ObjectType {
+    VIEW("V", "view"),
+    TABLE("U", "table"),
+    STORED_PROCEDURE("P", "procedure"),
+    DEFAULT("D", "default"),
+    RULE("R", "rule"),
+    TRIGGER("TR", "trigger");
+
     private final String type;
-    private String name;
+    private final String name;
 
 
     private ObjectType(String type, String name) {

@@ -4,7 +4,10 @@ public class DefaultCreateIndexQueryBuilder extends AbstractCreateIndexQueryBuil
 
     @Override
     public String get() {
-        StringBuilder create = new StringBuilder("create ");
+        return getImpl(new StringBuilder("create ")).toString();
+    }
+
+    protected StringBuilder getImpl(StringBuilder create) {
         switch (index.getType()) {
             case UNIQUE:
             case PRIMARY_KEY:
@@ -18,11 +21,8 @@ public class DefaultCreateIndexQueryBuilder extends AbstractCreateIndexQueryBuil
                 break;
         }
         create.append("index ").append(index.getName())
-              .append(" on ").append(index.getTable().getName()).append(" (");
-        for (SqlField field : index.getFields()) {
-            create.append(field.getName()).append(", ");
-        }
-        create.delete(create.length() - 2, create.length());
-        return create.append(")").toString();
+              .append(" on ").append(index.getTable().getName());
+        appendFieldList(create, index.getFields());
+        return create;
     }
 }

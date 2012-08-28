@@ -258,32 +258,34 @@ public abstract class AbstractDatabaseScriptHelperTest {
         assertEquals("", scriptHelper.buildCustomScript("customScriptTest", "UNE_CHAINE", 10000));
     }
 
+    protected String createEmptySqlContentForTrigger(boolean useComment) {
+        return useComment ? "// CUSTOM SQL CODE" : "";
+    }
 
     @Test
     public void test_createInsertTrigger() throws Exception {
         assertEquals(getCreateInsertTriggerScript(),
                      scriptHelper.buildCreateTriggerScript(
-                           buildInsertTrigger("// CUSTOM SQL CODE")));
+                           buildInsertTrigger(createEmptySqlContentForTrigger(true))));
     }
 
 
     @Test
     public void test_executeInsertTrigger() throws Exception {
-        createAndAssertTriggerExists(buildInsertTrigger(""));
+        createAndAssertTriggerExists(buildInsertTrigger(createEmptySqlContentForTrigger(false)));
     }
-
 
     @Test
     public void test_createUpdateTrigger() throws Exception {
         assertEquals(getCreateUpdateTriggerScript(),
                      scriptHelper.buildCreateTriggerScript(
-                           buildUpdateTrigger("// CUSTOM SQL CODE")));
+                           buildUpdateTrigger(createEmptySqlContentForTrigger(true))));
     }
 
 
     @Test
     public void test_executeUpdateTrigger() throws Exception {
-        createAndAssertTriggerExists(buildUpdateTrigger(""));
+        createAndAssertTriggerExists(buildUpdateTrigger(createEmptySqlContentForTrigger(false)));
     }
 
 
@@ -291,13 +293,13 @@ public abstract class AbstractDatabaseScriptHelperTest {
     public void test_createDeleteTrigger() throws Exception {
         assertEquals(getCreateDeleteTriggerScript(),
                      scriptHelper.buildCreateTriggerScript(
-                           buildDeleteTrigger("// CUSTOM SQL CODE")));
+                           buildDeleteTrigger(createEmptySqlContentForTrigger(true))));
     }
 
 
     @Test
     public void test_executeDeleteTrigger() throws Exception {
-        createAndAssertTriggerExists(buildDeleteTrigger(""));
+        createAndAssertTriggerExists(buildDeleteTrigger(createEmptySqlContentForTrigger(false)));
     }
 
 
@@ -305,13 +307,13 @@ public abstract class AbstractDatabaseScriptHelperTest {
     public void test_createDeleteCascadeTrigger() throws Exception {
         assertEquals(getCreateDeleteCascadeTriggerScript(),
                      scriptHelper.buildCreateTriggerScript(
-                           buildDeleteCascadeTrigger("// CUSTOM SQL CODE")));
+                           buildDeleteCascadeTrigger(createEmptySqlContentForTrigger(true))));
     }
 
 
     @Test
     public void test_executeDeleteCascadeTrigger() throws Exception {
-        createAndAssertTriggerExists(buildDeleteCascadeTrigger(""));
+        createAndAssertTriggerExists(buildDeleteCascadeTrigger(createEmptySqlContentForTrigger(false)));
 
         jdbcFixture
               .executeUpdate("insert into AP_TOTO (ID, ID1, ID2) values ('idValue', 'id1Value', 'id2Value')");
@@ -574,6 +576,7 @@ public abstract class AbstractDatabaseScriptHelperTest {
 
         SqlTrigger trigger = checkRecordTrigger("TR_AP_TOTO_IU", table("AP_TOTO"));
         trigger.addTableLink(table("AP_PARENT_TOTO"), fields("ID", "PARENT_ID"));
+        trigger.setSqlContent(createEmptySqlContentForTrigger(false));
         return trigger;
     }
 }

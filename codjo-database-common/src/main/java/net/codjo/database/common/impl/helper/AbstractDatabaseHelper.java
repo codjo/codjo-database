@@ -29,6 +29,9 @@ public abstract class AbstractDatabaseHelper implements DatabaseHelper {
         this.queryHelper = queryHelper;
     }
 
+    protected DatabaseQueryHelper getQueryHelper() {
+        return queryHelper;
+    }
 
     public String getDriverClassName() {
         return getDatabaseProperties().getProperty("database.driver");
@@ -63,7 +66,9 @@ public abstract class AbstractDatabaseHelper implements DatabaseHelper {
         configureConnectionProperties(connectionProperties);
         Connection connection = DriverManager
               .getConnection(getConnectionUrl(connectionMetadata), connectionProperties);
-        connection.setCatalog(connectionMetadata.getCatalog());
+        if ((connectionMetadata.getCatalog() != null) && (connectionMetadata.getCatalog().trim().length() > 0)) {
+            connection.setCatalog(connectionMetadata.getCatalog());
+        }
         return connection;
     }
 

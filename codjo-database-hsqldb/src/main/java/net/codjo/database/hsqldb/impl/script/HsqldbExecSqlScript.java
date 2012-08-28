@@ -1,29 +1,27 @@
 package net.codjo.database.hsqldb.impl.script;
+import java.io.File;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.io.StringReader;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.StringTokenizer;
+import net.codjo.database.common.api.DatabaseFactory;
 import net.codjo.database.common.impl.script.AbstractExecSqlScript;
 import java.util.List;
+import net.codjo.util.file.FileUtil;
+import org.apache.log4j.Logger;
+import org.apache.poi.hssf.record.formula.eval.ErrorEval;
+import org.hsqldb.cmdline.SqlFile;
+import org.hsqldb.cmdline.SqlToolError;
 public class HsqldbExecSqlScript extends AbstractExecSqlScript {
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(HsqldbExecSqlScript.class);
 
-    @Override
-    public void execute(String workingDirectory, String... scriptFileNames) {// TODO
-        throw new UnsupportedOperationException();
-    }
-
-
-    @Override
-    public void execute(String workingDirectory, List<String> scriptFileNames) {// TODO
-        throw new UnsupportedOperationException();
-    }
-
-
-    @Override
-    public void executeContentOfFile(String deliveryFileName) {// TODO
-        throw new UnsupportedOperationException();
-    }
-
+    private final DatabaseFactory databaseRepositorydatabaseFactory = new DatabaseFactory();
 
     @Override
     public String getQueryDelimiter() {
-        return null;  // Todo
+        return ";";
     }
 
 
@@ -41,7 +39,7 @@ public class HsqldbExecSqlScript extends AbstractExecSqlScript {
 
     @Override
     public String createSqlScriptCommand(String scriptFileName) {
-        return null;  // Todo
+        return null; // unused
     }
 
 
@@ -54,5 +52,80 @@ public class HsqldbExecSqlScript extends AbstractExecSqlScript {
     @Override
     protected String getScriptNotFoundErrorKeyWord() {
         return null;  // Todo
+    }
+
+
+    @Override
+    protected Connection prepareExecuteScripts() throws SQLException {
+        return databaseRepositorydatabaseFactory.createDatabaseHelper().createConnection(getConnectionMetadata());
+    }
+
+    /**
+     *
+     * @param scriptName
+     * @param cmd <strong>unused parameter</strong>
+     * @param workingDirectory
+     */
+    @Override
+    protected void executeScript(Connection connection, String scriptName, String cmd, File workingDirectory) {
+        File scriptFile = new File(workingDirectory, scriptName);
+        try {
+/*
+            SqlFile sqlFile = new SqlFile(scriptFile);
+            sqlFile.setAutoClose(true);
+            sqlFile.setConnection(connection);
+            sqlFile.execute();
+*/
+            final String script = FileUtil.loadContent(scriptFile);
+            connection.createStatement().execute(script);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e.getMessage() + printScript(scriptFile, e), e);
+        }
+/*
+        catch (SqlToolError sqlToolError) {
+            throw new RuntimeException(sqlToolError);
+        }
+*/
+    }
+
+    private String printScript(File scriptFile, SQLException e) {
+        String result = "<unable to load script from file " + scriptFile.getAbsolutePath() + ">";
+
+        try {
+            final String script = FileUtil.loadContent(scriptFile);
+            result = script;
+
+            String errorMessage = e.getMessage();
+            final String linePattern = "line:";
+            int idx = errorMessage.lastIndexOf(linePattern);
+            if (idx >= 0) {
+                if (errorMessage.startsWith(e.getSQLState())) {
+                    errorMessage = errorMessage.substring(e.getSQLState().length());
+                }
+                idx += linePattern.length();
+                int line = Integer.parseInt(errorMessage.substring(idx).trim());
+                LineNumberReader lnr = new LineNumberReader(new StringReader(script));
+                String l;
+                result = ".....\n";
+                while ((l = lnr.readLine()) != null) {
+                    if ((lnr.getLineNumber() >= (line - 2)) && (lnr.getLineNumber() <= (line + 2))) {
+                        result += String.format("% 2d: %s\n", lnr.getLineNumber(), l);
+                    }
+                }
+                result += ".....\n";
+            }
+        }
+        catch (IOException e1) {
+            LOG.error(e1);
+        }
+        catch (NumberFormatException e1) {
+            // ignore
+        }
+
+        return ". Script:\n" + result;
     }
 }

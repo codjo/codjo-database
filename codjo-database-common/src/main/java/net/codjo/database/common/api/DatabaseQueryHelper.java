@@ -56,6 +56,7 @@ public interface DatabaseQueryHelper {
     String buildUpdateQuery(SqlTable sqlTable, SqlField... sqlFields);
 
 
+    boolean buildCreateIndexQueryReturnsQueries(SqlIndex sqlIndex);
     String buildCreateIndexQuery(SqlIndex sqlIndex);
 
 

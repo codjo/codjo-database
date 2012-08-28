@@ -115,6 +115,10 @@ public abstract class AbstractDatabaseQueryHelper implements DatabaseQueryHelper
     }
 
 
+    public boolean buildCreateIndexQueryReturnsQueries(SqlIndex sqlIndex) {
+        return false;
+    }
+
     public String buildCreateIndexQuery(SqlIndex sqlIndex) {
         return newCreateIndexQueryBuilder().index(sqlIndex).get();
     }
