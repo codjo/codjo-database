@@ -7,6 +7,7 @@ import java.util.List;
 import net.codjo.database.common.api.ConnectionMetadata;
 import net.codjo.database.common.api.ExecSqlScript;
 import net.codjo.util.file.FileUtil;
+import static net.codjo.test.common.PathUtil.normalize;
 
 public abstract class AbstractExecSqlScript implements ExecSqlScript {
     private static final String NEW_LINE = System.getProperty("line.separator");
@@ -50,6 +51,9 @@ public abstract class AbstractExecSqlScript implements ExecSqlScript {
     }
 
     protected final void executeScripts(File rootDirectory, String[] scripts) {
+        for (int i = 0;  i < scripts.length; i++) {
+            scripts[i] = normalize(scripts[i]);
+        }
         assertAllFilesExist(rootDirectory, scripts);
 
         Connection connection = null; // can return null

@@ -107,7 +107,7 @@ public abstract class AbstractExecSqlScriptTest {
         }
         catch (Exception e) {
             String expectedMessage = "Les fichiers suivants sont introuvables :" + NEW_LINE
-                                     + ">Tables\\AP_TEST_BAD.txt<" + NEW_LINE;
+                                     + ">Tables" + File.separatorChar + "AP_TEST_BAD.txt<" + NEW_LINE;
             assertEquals(expectedMessage, e.getMessage());
         }
     }
