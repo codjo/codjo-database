@@ -11,7 +11,6 @@ import net.codjo.database.common.api.RuntimeSqlException;
 import net.codjo.database.common.api.structure.SqlIndex;
 import net.codjo.database.common.api.structure.SqlTrigger.Type;
 import net.codjo.database.hsqldb.impl.helper.HsqldbDatabaseScriptHelper;
-import org.hsqldb.auth.HsqldbSlaveAuthBean;
 public class HsqldbJdbcFixtureAdvanced extends JdbcFixtureAdvanced {
 
     public HsqldbJdbcFixtureAdvanced(JdbcFixture jdbcFixture) {

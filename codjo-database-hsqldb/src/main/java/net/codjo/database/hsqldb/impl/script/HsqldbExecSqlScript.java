@@ -12,8 +12,6 @@ import java.util.List;
 import net.codjo.util.file.FileUtil;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.record.formula.eval.ErrorEval;
-import org.hsqldb.cmdline.SqlFile;
-import org.hsqldb.cmdline.SqlToolError;
 public class HsqldbExecSqlScript extends AbstractExecSqlScript {
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(HsqldbExecSqlScript.class);
 
@@ -70,12 +68,6 @@ public class HsqldbExecSqlScript extends AbstractExecSqlScript {
     protected void executeScript(Connection connection, String scriptName, String cmd, File workingDirectory) {
         File scriptFile = new File(workingDirectory, scriptName);
         try {
-/*
-            SqlFile sqlFile = new SqlFile(scriptFile);
-            sqlFile.setAutoClose(true);
-            sqlFile.setConnection(connection);
-            sqlFile.execute();
-*/
             final String script = FileUtil.loadContent(scriptFile);
             connection.createStatement().execute(script);
         }
@@ -85,11 +77,6 @@ public class HsqldbExecSqlScript extends AbstractExecSqlScript {
         catch (SQLException e) {
             throw new RuntimeException(e.getMessage() + printScript(scriptFile, e), e);
         }
-/*
-        catch (SqlToolError sqlToolError) {
-            throw new RuntimeException(sqlToolError);
-        }
-*/
     }
 
     private String printScript(File scriptFile, SQLException e) {
