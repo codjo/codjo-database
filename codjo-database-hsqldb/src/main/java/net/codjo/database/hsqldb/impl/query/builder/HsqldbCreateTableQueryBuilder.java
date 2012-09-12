@@ -9,8 +9,11 @@ public class HsqldbCreateTableQueryBuilder extends AbstractCreateTableQueryBuild
         if (table.isTemporary()) {
             create.append("temp ");
         }
-        return create
-              .append("table ").append(table.getName())
-              .append(" ( ").append(content).append(" )").toString();
+        create.append("table ").append(table.getName())
+              .append(" ( ").append(content).append(" )");
+        if (table.isTemporary()) {
+            create.append(" ON COMMIT PRESERVE ROWS");
+        }
+        return create.toString();
     }
 }

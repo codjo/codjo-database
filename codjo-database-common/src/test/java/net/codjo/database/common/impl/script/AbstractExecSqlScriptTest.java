@@ -107,7 +107,7 @@ public abstract class AbstractExecSqlScriptTest {
         }
         catch (Exception e) {
             String expectedMessage = "Les fichiers suivants sont introuvables :" + NEW_LINE
-                                     + ">Tables\\AP_TEST_BAD.txt<" + NEW_LINE;
+                                     + ">Tables" + File.separatorChar + "AP_TEST_BAD.txt<" + NEW_LINE;
             assertEquals(expectedMessage, e.getMessage());
         }
     }
@@ -187,7 +187,7 @@ public abstract class AbstractExecSqlScriptTest {
             fail("Script inexistant");
         }
         catch (Exception ex) {
-            jdbcFixture.assertContent(SqlTable.table("AP_TEST"), new String[][]{{"TABLE"}});
+            jdbcFixture.assertContent(SqlTable.table("AP_TEST"), null);
         }
     }
 

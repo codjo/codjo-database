@@ -118,7 +118,7 @@ public abstract class JdbcFixture implements Fixture {
     }
 
 
-    public void deleteAllTables() {
+    protected List<String> getAllTables() {
         try {
             Connection con = getConnection();
             Relationship relationship = databaseFactory.createRelationShip(con);
@@ -133,6 +133,19 @@ public abstract class JdbcFixture implements Fixture {
             while (resultSet.next()) {
                 list.add(resultSet.getString("TABLE_NAME"));
             }
+
+            return list;
+        }
+        catch (SQLException e) {
+            throw new RuntimeSqlException(e);
+        }
+    }
+
+    public void deleteAllTables() {
+        try {
+            Connection con = getConnection();
+            Relationship relationship = databaseFactory.createRelationShip(con);
+            List<String> list = getAllTables();
 
             if (list.isEmpty()) {
                 return;
@@ -172,12 +185,17 @@ public abstract class JdbcFixture implements Fixture {
     public void assertQueryResult(String sqlQuery, String[][] expectedValue) {
         try {
             Statement statement = getConnection().createStatement();
+
             String[][] actualValue = getResult(statement, sqlQuery);
-            if (actualValue == null) {
+            if ((expectedValue == null) && (actualValue == null)) {
+                // expected empty and actual result is also empty => OK
+                return;
+            }
+            if ((expectedValue != null) && (actualValue == null)) {
                 Assert.assertNull("Expected not empty but it was", expectedValue);
                 return;
             }
-            if (expectedValue == null) {
+            if ((expectedValue == null) && (actualValue != null)) {
                 Assert.assertNull("Expected empty but was not", actualValue);
                 return;
             }

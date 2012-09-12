@@ -32,7 +32,7 @@ public class SqlTrigger extends AbstractSqlObject {
     }
 
 
-    private void setType(Type type) {
+    public void setType(Type type) {
         this.type = type;
     }
 
