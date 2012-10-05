@@ -1,4 +1,7 @@
 package net.codjo.database.hsqldb.impl.query;
+import net.codjo.database.common.api.structure.SqlIndex;
+import net.codjo.database.common.api.structure.SqlIndex.Type;
+import net.codjo.database.common.api.structure.SqlTrigger;
 import net.codjo.database.common.impl.query.AbstractDatabaseQueryHelper;
 import net.codjo.database.common.impl.query.builder.AbstractAlterTableQueryBuilder;
 import net.codjo.database.common.impl.query.builder.AbstractCreateConstraintQueryBuilder;
@@ -21,6 +24,7 @@ import net.codjo.database.common.impl.query.builder.DefaultSelectQueryBuilder;
 import net.codjo.database.common.impl.query.builder.DefaultUpdateQueryBuilder;
 import net.codjo.database.common.impl.query.runner.DefaultRowCountStrategy;
 import net.codjo.database.common.impl.query.runner.RowCountStrategy;
+import net.codjo.database.hsqldb.impl.query.builder.HsqldbCreateIndexQueryBuilder;
 import net.codjo.database.hsqldb.impl.query.builder.HsqldbCreateTableQueryBuilder;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -42,7 +46,6 @@ public class HsqldbDatabaseQueryHelper extends AbstractDatabaseQueryHelper {
     protected AbstractCreateTableQueryBuilder newCreateTableQueryBuilder() {
         return new HsqldbCreateTableQueryBuilder();
     }
-
 
     @Override
     protected AbstractAlterTableQueryBuilder newAlterTableQueryBuilder() {
@@ -67,10 +70,14 @@ public class HsqldbDatabaseQueryHelper extends AbstractDatabaseQueryHelper {
         return new DefaultCreateViewQueryBuilder();
     }
 
+    public boolean buildCreateIndexQueryReturnsQueries(SqlIndex sqlIndex) {
+        // hsqldb needs 2 queries to create a UNIQUE index
+        return Type.UNIQUE.equals(sqlIndex.getType());
+    }
 
     @Override
     protected AbstractCreateIndexQueryBuilder newCreateIndexQueryBuilder() {
-        return new DefaultCreateIndexQueryBuilder();
+        return new HsqldbCreateIndexQueryBuilder();
     }
 
 

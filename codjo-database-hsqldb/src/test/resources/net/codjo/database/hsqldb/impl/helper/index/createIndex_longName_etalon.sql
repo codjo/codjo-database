@@ -1,0 +1,2 @@
+create index X1_INDEX_WITH_VERY_VERY_LONG_N on AP_TOTO (ID)
+go

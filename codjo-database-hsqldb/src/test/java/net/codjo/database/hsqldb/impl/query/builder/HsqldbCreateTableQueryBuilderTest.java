@@ -12,7 +12,7 @@ public class HsqldbCreateTableQueryBuilderTest extends AbstractCreateTableQueryB
 
     @Override
     protected String getCreateTemporaryTableQuery() {
-        return "create temp table MA_TABLE ( COL1 varchar(255) )";
+        return "create temp table MA_TABLE ( COL1 varchar(255) ) ON COMMIT PRESERVE ROWS";
     }
 
 

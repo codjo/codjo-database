@@ -23,7 +23,7 @@ public abstract class JdbcFixtureAdvanced {
     private final DatabaseHelper databaseHelper = databaseFactory.createDatabaseHelper();
     private final DatabaseQueryHelper queryHelper = databaseFactory.getDatabaseQueryHelper();
     private final ExecSqlScript execSqlScript = databaseFactory.createExecSqlScript();
-
+    private final DatabaseScriptHelper scriptHelper = databaseFactory.createDatabaseScriptHelper();
 
     protected JdbcFixtureAdvanced(JdbcFixture jdbcFixture) {
         this.jdbcFixture = jdbcFixture;
@@ -78,7 +78,14 @@ public abstract class JdbcFixtureAdvanced {
 
 
     public void create(SqlIndex index) {
-        executeUpdate(queryHelper.buildCreateIndexQuery(index));
+        String query = queryHelper.buildCreateIndexQuery(index);
+        if (queryHelper.buildCreateIndexQueryReturnsQueries(index)) {
+            for(String q : query.split(scriptHelper.getQueryDelimiter())) {
+                executeUpdate(q);
+            }
+        } else {
+            executeUpdate(query);
+        }
     }
 
 
@@ -326,7 +333,7 @@ public abstract class JdbcFixtureAdvanced {
     }
 
 
-    private ResultSet executeQuery(String query) {
+    protected ResultSet executeQuery(String query) {
         try {
             return jdbcFixture.executeQuery(query);
         }

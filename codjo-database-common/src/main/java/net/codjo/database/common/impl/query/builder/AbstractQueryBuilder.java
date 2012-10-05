@@ -17,4 +17,13 @@ public abstract class AbstractQueryBuilder {
     protected String formatFieldName(SqlField sqlField) {
         return sqlField.getName();
     }
+
+    public static StringBuilder appendFieldList(StringBuilder sql, Iterable<SqlField> fields) {
+        sql.append(" (");
+        for (SqlField field : fields) {
+            sql.append(field.getName()).append(", ");
+        }
+        sql.delete(sql.length() - 2, sql.length());
+        return sql.append(")");
+    }
 }
