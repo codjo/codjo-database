@@ -7,7 +7,8 @@ import java.util.List;
 import net.codjo.database.common.api.ConnectionMetadata;
 import net.codjo.database.common.api.ExecSqlScript;
 import net.codjo.util.file.FileUtil;
-import static net.codjo.test.common.PathUtil.normalize;
+
+import static net.codjo.util.file.PathUtil.normalize;
 
 public abstract class AbstractExecSqlScript implements ExecSqlScript {
     private static final String NEW_LINE = System.getProperty("line.separator");
