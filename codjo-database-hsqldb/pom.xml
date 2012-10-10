@@ -27,7 +27,7 @@
         <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
-			<classifier>jdk5</classifier>
+            <classifier>${envClassifier}</classifier>
         </dependency>
     </dependencies>
 
