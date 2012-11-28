@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import net.codjo.database.common.api.ConnectionMetadata;
 import net.codjo.database.common.api.DatabaseQueryHelper;
 import net.codjo.database.common.api.structure.SqlTable;
@@ -52,6 +53,43 @@ public class OracleDatabaseHelper extends AbstractDatabaseHelper {
         }
         finally {
             statement.close();
+        }
+    }
+
+
+    @Override
+    protected void configureConnectionProperties(Properties connectionProperties) {
+        if (connectionProperties.getProperty(LANGUAGE_KEY) == null) {
+            connectionProperties.put(LANGUAGE_KEY, "french");
+        }
+        connectionProperties.put("oracle.jdbc.mapDateToTimestamp", "false");
+        connectionProperties.put("oracle.jdbc.J2EE13Compliant", "true");
+        String hostname = connectionProperties.getProperty("HOSTNAME");
+        if (hostname != null) {
+            connectionProperties.put("v$session.machine", hostname);
+        }
+    }
+
+
+    @Override
+    protected void configureSession(Connection connection, Properties connectionProperties) throws SQLException {
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
+            statement.execute("ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH24:MI:SS'");
+            statement.execute("ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD'");
+            statement.execute("ALTER SESSION SET NLS_NUMERIC_CHARACTERS = '. '");
+
+            statement.execute("ALTER SESSION SET CURRENT_SCHEMA=" + connectionProperties.getProperty(CATALOG_KEY));
+            String language = connectionProperties.getProperty(LANGUAGE_KEY);
+            if (language != null) {
+                statement.execute("ALTER SESSION SET NLS_LANGUAGE= " + language);
+            }
+        }
+        finally {
+            if (statement != null) {
+                statement.close();
+            }
         }
     }
 

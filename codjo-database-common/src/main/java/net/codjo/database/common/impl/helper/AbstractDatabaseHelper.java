@@ -29,9 +29,11 @@ public abstract class AbstractDatabaseHelper implements DatabaseHelper {
         this.queryHelper = queryHelper;
     }
 
+
     protected DatabaseQueryHelper getQueryHelper() {
         return queryHelper;
     }
+
 
     public String getDriverClassName() {
         return getDatabaseProperties().getProperty("database.driver");
@@ -48,7 +50,7 @@ public abstract class AbstractDatabaseHelper implements DatabaseHelper {
     }
 
 
-    public final Connection createConnection(ConnectionMetadata connectionMetadata) throws SQLException {
+    public final Connection createConnection(String url, Properties properties) throws SQLException {
         String driver = getDriverClassName();
         try {
             Class.forName(driver);
@@ -57,19 +59,30 @@ public abstract class AbstractDatabaseHelper implements DatabaseHelper {
             throw new RuntimeException("Impossible de charger le driver " + driver);
         }
 
-        Properties connectionProperties = new Properties();
-        connectionProperties.put("user", connectionMetadata.getUser());
-        connectionProperties.put("password", connectionMetadata.getPassword());
-        if (connectionMetadata.getCharset() != null) {
-            connectionProperties.put("CHARSET", connectionMetadata.getCharset());
-        }
+        Properties connectionProperties = new Properties(properties);
+
         configureConnectionProperties(connectionProperties);
-        Connection connection = DriverManager
-              .getConnection(getConnectionUrl(connectionMetadata), connectionProperties);
-        if ((connectionMetadata.getCatalog() != null) && (connectionMetadata.getCatalog().trim().length() > 0)) {
-            connection.setCatalog(connectionMetadata.getCatalog());
+        Connection connection = DriverManager.getConnection(url, connectionProperties);
+        configureSession(connection, connectionProperties);
+
+        String catalog = connectionProperties.getProperty(CATALOG_KEY);
+        if ((catalog != null) && (catalog.trim().length() > 0)) {
+            connection.setCatalog(catalog);
         }
         return connection;
+    }
+
+
+    public final Connection createConnection(ConnectionMetadata connectionMetadata) throws SQLException {
+        Properties connectionProperties = new Properties();
+        connectionProperties.put(USER_KEY, connectionMetadata.getUser());
+        connectionProperties.put(PASSWORD_KEY, connectionMetadata.getPassword());
+        if (connectionMetadata.getCharset() != null) {
+            connectionProperties.put(CHARSET_KEY, connectionMetadata.getCharset());
+        }
+        connectionProperties.put(CATALOG_KEY, connectionMetadata.getCatalog());
+
+        return createConnection(getConnectionUrl(connectionMetadata), connectionProperties);
     }
 
 
@@ -201,6 +214,10 @@ public abstract class AbstractDatabaseHelper implements DatabaseHelper {
 
 
     protected void configureConnectionProperties(Properties connectionProperties) {
+    }
+
+
+    protected void configureSession(Connection connection, Properties connectionProperties) throws SQLException {
     }
 
 
