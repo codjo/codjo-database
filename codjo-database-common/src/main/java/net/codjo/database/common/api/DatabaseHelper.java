@@ -1,11 +1,19 @@
 package net.codjo.database.common.api;
-import net.codjo.database.common.api.structure.SqlConstraint;
-import net.codjo.database.common.api.structure.SqlTable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import net.codjo.database.common.api.structure.SqlConstraint;
+import net.codjo.database.common.api.structure.SqlTable;
 public interface DatabaseHelper {
+
+    final String LANGUAGE_KEY = "LANGUAGE";
+    final String CATALOG_KEY = "CATALOG";
+    final String CHARSET_KEY = "CHARSET";
+    final String USER_KEY = "user";
+    final String PASSWORD_KEY = "password";
+
 
     String getDriverClassName();
 
@@ -17,6 +25,9 @@ public interface DatabaseHelper {
 
 
     ConnectionMetadata createLibraryConnectionMetadata();
+
+
+    Connection createConnection(String url, Properties properties) throws SQLException;
 
 
     Connection createConnection(ConnectionMetadata connectionMetadata) throws SQLException;

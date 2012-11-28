@@ -118,7 +118,9 @@ public class SybaseDatabaseHelper extends AbstractDatabaseHelper {
 
     @Override
     protected void configureConnectionProperties(Properties connectionProperties) {
-        connectionProperties.put("LANGUAGE", "french");
+        if (connectionProperties.getProperty(LANGUAGE_KEY) == null) {
+            connectionProperties.put(LANGUAGE_KEY, "french");
+        }
     }
 
 
