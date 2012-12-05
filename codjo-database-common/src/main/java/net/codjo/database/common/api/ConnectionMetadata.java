@@ -31,6 +31,14 @@ public class ConnectionMetadata {
         if (user == null) {
             loadFromJdbc(databaseProperties);
         }
+        if (user == null) {
+            loadFromServerConfig(databaseProperties);
+        }
+    }
+
+
+    private void loadFromServerConfig(Properties databaseProperties) {
+        loadFromProperties(databaseProperties, "");
     }
 
 
@@ -125,7 +133,12 @@ public class ConnectionMetadata {
 
 
     private void loadFromProperties(Properties databaseProperties, String prefix) {
-        String server = databaseProperties.getProperty(prefix + ".server");
+        String smartPrefix = prefix;
+        if (prefix.length() != 0) {
+            smartPrefix += ".";
+        }
+
+        String server = databaseProperties.getProperty(smartPrefix + "server");
         if (server != null) {
             String[] tokens = server.split(":");
             if (tokens.length >= 2) {
@@ -137,11 +150,11 @@ public class ConnectionMetadata {
                 port = null;
             }
         }
-        user = databaseProperties.getProperty(prefix + ".user");
-        password = databaseProperties.getProperty(prefix + ".pwd");
-        catalog = databaseProperties.getProperty(prefix + ".catalog");
-        base = databaseProperties.getProperty(prefix + ".base");
-        charset = databaseProperties.getProperty(prefix + ".charset");
+        user = databaseProperties.getProperty(smartPrefix + "user");
+        password = databaseProperties.getProperty(smartPrefix + "pwd");
+        catalog = databaseProperties.getProperty(smartPrefix + "catalog");
+        base = databaseProperties.getProperty(smartPrefix + "base");
+        charset = databaseProperties.getProperty(smartPrefix + "charset");
         schema = null;
     }
 }

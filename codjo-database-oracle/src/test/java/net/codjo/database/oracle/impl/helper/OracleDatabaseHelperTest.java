@@ -1,9 +1,12 @@
 package net.codjo.database.oracle.impl.helper;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
+import junit.framework.Assert;
 import net.codjo.database.common.api.ConnectionMetadata;
 import net.codjo.database.common.api.DatabaseHelper;
 import net.codjo.database.common.api.ObjectType;
@@ -14,6 +17,7 @@ import net.codjo.database.oracle.impl.query.OracleDatabaseQueryHelper;
 import org.junit.Before;
 import org.junit.Test;
 
+import static junit.framework.Assert.assertNotNull;
 import static net.codjo.database.common.api.structure.SqlConstraint.foreignKey;
 import static net.codjo.database.common.api.structure.SqlIndex.normalIndex;
 import static net.codjo.database.common.api.structure.SqlTable.table;
@@ -37,6 +41,76 @@ public class OracleDatabaseHelperTest extends AbstractDatabaseHelperTest {
               .append(databaseProperties.getProperty("database.hostname")).append(":")
               .append(databaseProperties.getProperty("database.port")).append(":")
               .append(databaseProperties.getProperty("database.base")).toString();
+    }
+
+
+    @Test
+    @Override
+    public void test_createConnection() throws Exception {
+        Properties properties = getConnectionProperties();
+        ConnectionMetadata connectionMetadata = new ConnectionMetadata();
+        connectionMetadata.setHostname(properties.getProperty("database.hostname"));
+        connectionMetadata.setPort(properties.getProperty("database.port"));
+        connectionMetadata.setUser(properties.getProperty("database.user"));
+        connectionMetadata.setPassword(properties.getProperty("database.password"));
+        connectionMetadata.setCatalog(properties.getProperty("database.catalog"));
+        connectionMetadata.setBase(properties.getProperty("database.base"));
+
+        Connection connection = databaseHelper.createConnection(connectionMetadata);
+
+        assertNotNull(connection);
+
+        assertVariableFromCurrentSession(connectionMetadata.getUser(), "schemaname", connectionMetadata.getUser());
+
+        assertNlsParam(connection, "NLS_LANGUAGE", "FRENCH");
+        assertNlsParam(connection, "NLS_DATE_FORMAT", "YYYY-MM-DD");
+        assertNlsParam(connection, "NLS_TIMESTAMP_FORMAT", "YYYY-MM-DD HH24:MI:SS");
+
+        assertJ2EE13Compliance(connection);
+
+        Assert.assertEquals(buildDatabaseUrl(properties), connection.getMetaData().getURL());
+    }
+
+
+    private void assertJ2EE13Compliance(Connection connection) throws SQLException {
+        jdbcFixture.executeUpdate("create table AP_J2EE_3 ( "
+                                  + "    JAVA_SQL_TIMESTAMP      TIMESTAMP (6)  not null, "
+                                  + "    DATE_BUT_NOT_TIMESTAMP      DATE  not null "
+                                  + ")");
+
+        jdbcFixture.executeUpdate(
+              "insert into AP_J2EE_3 (JAVA_SQL_TIMESTAMP, DATE_BUT_NOT_TIMESTAMP) values ('2012-05-13', '2012-05-13')");
+
+        Statement statement = connection.createStatement();
+        ResultSet rs = statement.executeQuery("select * from AP_J2EE_3");
+        assertTrue(rs.next());
+        Assert.assertEquals(java.sql.Timestamp.class, rs.getObject("JAVA_SQL_TIMESTAMP").getClass());
+        Assert.assertEquals(java.sql.Date.class, rs.getObject("DATE_BUT_NOT_TIMESTAMP").getClass());
+        rs.close();
+        statement.close();
+    }
+
+
+    private void assertVariableFromCurrentSession(String sessionUserName,
+                                                  String variableName,
+                                                  Object expectedValue) throws SQLException {
+        ResultSet rs = jdbcFixture.executeQuery(
+              "select " + variableName + " from v$session where type='USER' and username='" + sessionUserName + "'");
+        assertTrue(rs.next());
+        Assert.assertEquals(expectedValue, rs.getObject(1));
+        rs.close();
+    }
+
+
+    private void assertNlsParam(Connection connection, String nlsParamName, String expectedValue) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(
+              "select VALUE from NLS_SESSION_PARAMETERS  where PARAMETER=?");
+
+        preparedStatement.setString(1, nlsParamName);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
+        Assert.assertEquals(expectedValue, resultSet.getObject(1));
+        resultSet.close();
     }
 
 
