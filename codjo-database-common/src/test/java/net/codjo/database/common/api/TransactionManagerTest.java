@@ -68,8 +68,7 @@ public class TransactionManagerTest extends TestCase {
                                                           final String resultAsString, final CallBack callback)
           throws Exception {
         final Connection connection = new ConnectionMock(log).getStub();
-        TransactionManager<String> transactionManager
-              = new TransactionManager<String>(connection) {
+        TransactionManager<String> transactionManager = new TransactionManager<String>(connection) {
             @Override
             protected String runSql(Connection connection) throws SQLException {
                 log.call("runSql");
@@ -86,7 +85,6 @@ public class TransactionManagerTest extends TestCase {
     }
 
 
-    //TODO[segolene] peut-etre renommer l'interface ?
     private interface CallBack {
         String doIt(final String result) throws SQLException;
     }

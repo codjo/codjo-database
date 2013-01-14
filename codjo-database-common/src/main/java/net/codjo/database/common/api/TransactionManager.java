@@ -10,7 +10,7 @@ public abstract class TransactionManager<T> {
     private final static Logger LOGGER = Logger.getLogger(TransactionManager.class);
 
 
-    public TransactionManager(Connection connection) throws SQLException {
+    protected TransactionManager(Connection connection) throws SQLException {
         previousAutoCommitMode = connection.getAutoCommit();
         hasToChangeAutoCommit = hasToChangeAutoCommit();
         if (hasToChangeAutoCommit) {
@@ -51,7 +51,6 @@ public abstract class TransactionManager<T> {
     }
 
 
-    //TODO[segolene] peut-etre renommer la methode ?
     protected abstract T runSql(Connection connection) throws Exception;
 
 
