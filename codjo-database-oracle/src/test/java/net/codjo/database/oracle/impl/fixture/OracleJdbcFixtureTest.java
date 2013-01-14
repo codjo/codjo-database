@@ -113,19 +113,6 @@ public class OracleJdbcFixtureTest extends JdbcFixtureTest {
     }
 
 
-    // todo à supprimer dès que le script de création d'index oracle aura été implémenté
-    @Override
-    @Test
-    public void test_executeCreateTableScriptFile() throws Exception {
-        jdbcFixture.advanced()
-              .executeCreateTableScriptFile(new File(findResourcesFileDirectory(getClass()), "JdbcFixtureTest.tab"));
-
-        jdbcFixture.advanced().assertExists("JDBC_FIXTURE_TEST");
-
-        jdbcFixture.drop(table("JDBC_FIXTURE_TEST"));
-    }
-
-
     @Test
     public void test_spoolQuery() throws Exception {
         jdbcFixture.create(table("JDBC_FIXTURE_TEST"), "COL1 varchar(5), COL2 varchar(5)");
