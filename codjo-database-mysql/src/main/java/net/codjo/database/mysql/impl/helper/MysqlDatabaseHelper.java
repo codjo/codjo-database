@@ -1,14 +1,14 @@
 package net.codjo.database.mysql.impl.helper;
-import net.codjo.database.common.api.ConnectionMetadata;
-import net.codjo.database.common.api.DatabaseQueryHelper;
-import net.codjo.database.common.api.structure.SqlTable;
-import net.codjo.database.common.impl.helper.AbstractDatabaseHelper;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import net.codjo.database.common.api.ConnectionMetadata;
+import net.codjo.database.common.api.DatabaseQueryHelper;
+import net.codjo.database.common.api.structure.SqlTable;
+import net.codjo.database.common.impl.helper.AbstractDatabaseHelper;
 import org.apache.log4j.Logger;
 public class MysqlDatabaseHelper extends AbstractDatabaseHelper {
     private static final Logger LOGGER = Logger.getLogger(MysqlDatabaseHelper.class);
@@ -33,12 +33,46 @@ public class MysqlDatabaseHelper extends AbstractDatabaseHelper {
 
     public void truncateTable(Connection connection, SqlTable table) throws SQLException {
         Statement statement = connection.createStatement();
+        int previousParam = 0;
         try {
+            previousParam = getForeignKeyChecks(connection);
+            setForeignKeyChecks(connection, 0);
             statement.executeUpdate("truncate table " + table.getName());
+        }
+        finally {
+            setForeignKeyChecks(connection, previousParam);
+            statement.close();
+        }
+    }
+
+
+    void setForeignKeyChecks(Connection connection, int foreignKeyCheck) throws SQLException {
+        Statement statement = connection.createStatement();
+        try {
+            statement.executeUpdate("set foreign_key_checks = " + foreignKeyCheck);
         }
         finally {
             statement.close();
         }
+    }
+
+
+    int getForeignKeyChecks(Connection connection) throws SQLException {
+        Statement statement = connection.createStatement();
+        final ResultSet resultSet;
+        int foreignKeyChecks;
+        try {
+            resultSet = statement.executeQuery("select @@foreign_key_checks");
+            foreignKeyChecks = 0;
+            if (resultSet.next()) {
+                foreignKeyChecks = resultSet.getInt(1);
+            }
+            resultSet.close();
+        }
+        finally {
+            statement.close();
+        }
+        return foreignKeyChecks;
     }
 
 

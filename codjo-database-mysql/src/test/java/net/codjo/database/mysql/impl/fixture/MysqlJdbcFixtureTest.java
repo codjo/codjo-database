@@ -1,18 +1,19 @@
 package net.codjo.database.mysql.impl.fixture;
-import net.codjo.database.common.api.JdbcFixture;
-import static net.codjo.database.common.api.JdbcFixture.newFixture;
-import net.codjo.database.common.api.JdbcFixtureTest;
-import net.codjo.database.common.api.structure.SqlConstraint;
-import static net.codjo.database.common.api.structure.SqlConstraint.foreignKey;
-import static net.codjo.database.common.api.structure.SqlField.fields;
-import net.codjo.database.common.api.structure.SqlTable;
-import static net.codjo.database.common.api.structure.SqlTable.table;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.sql.SQLException;
-import static org.junit.Assert.assertEquals;
+import net.codjo.database.common.api.JdbcFixture;
+import net.codjo.database.common.api.JdbcFixtureTest;
+import net.codjo.database.common.api.structure.SqlConstraint;
+import net.codjo.database.common.api.structure.SqlTable;
 import org.junit.Before;
 import org.junit.Test;
+
+import static net.codjo.database.common.api.JdbcFixture.newFixture;
+import static net.codjo.database.common.api.structure.SqlConstraint.foreignKey;
+import static net.codjo.database.common.api.structure.SqlField.fields;
+import static net.codjo.database.common.api.structure.SqlTable.table;
+import static org.junit.Assert.assertEquals;
 public class MysqlJdbcFixtureTest extends JdbcFixtureTest {
 
     @Override
