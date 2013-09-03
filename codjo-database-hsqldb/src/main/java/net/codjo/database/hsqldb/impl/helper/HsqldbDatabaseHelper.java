@@ -1,12 +1,11 @@
 package net.codjo.database.hsqldb.impl.helper;
-import net.codjo.database.common.api.ConnectionMetadata;
-import net.codjo.database.common.api.DatabaseQueryHelper;
-import net.codjo.database.common.api.ObjectType;
-import net.codjo.database.common.api.structure.SqlTable;
-import net.codjo.database.common.impl.helper.AbstractDatabaseHelper;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import net.codjo.database.common.api.ConnectionMetadata;
+import net.codjo.database.common.api.DatabaseQueryHelper;
+import net.codjo.database.common.api.structure.SqlTable;
+import net.codjo.database.common.impl.helper.AbstractDatabaseHelper;
 public class HsqldbDatabaseHelper extends AbstractDatabaseHelper {
 
     public HsqldbDatabaseHelper(DatabaseQueryHelper queryHelper) {
@@ -15,7 +14,20 @@ public class HsqldbDatabaseHelper extends AbstractDatabaseHelper {
 
 
     public String getConnectionUrl(ConnectionMetadata connectionMetadata) {
-        return "jdbc:hsqldb:.";
+        StringBuilder hostname = new StringBuilder(connectionMetadata.getHostname());
+        if (hostname.length() == 0) {
+            return "jdbc:hsqldb:.";
+        }
+        else {
+            String port = connectionMetadata.getPort();
+            if (!"".equals(port)) {
+                hostname.append(":").append(port);
+            }
+            if (!"".equals(connectionMetadata.getBase())) {
+                hostname.append("/").append(connectionMetadata.getBase());
+            }
+            return "jdbc:hsqldb:hsql://" + hostname.toString();
+        }
     }
 
 
@@ -41,7 +53,8 @@ public class HsqldbDatabaseHelper extends AbstractDatabaseHelper {
         Statement s = connection.createStatement();
         try {
             s.executeUpdate("GRANT " + groupName + " TO " + userName);
-        } finally {
+        }
+        finally {
             s.close();
         }
     }
@@ -51,7 +64,8 @@ public class HsqldbDatabaseHelper extends AbstractDatabaseHelper {
         Statement s = connection.createStatement();
         try {
             s.executeUpdate("DROP SCHEMA PUBLIC CASCADE");
-        } finally {
+        }
+        finally {
             s.close();
         }
 /*
@@ -64,6 +78,7 @@ public class HsqldbDatabaseHelper extends AbstractDatabaseHelper {
         dropAllObjects(connection, ObjectType.TRIGGER);
 */
     }
+
 
     @Override
     public void setIdentityInsert(Connection connection,
