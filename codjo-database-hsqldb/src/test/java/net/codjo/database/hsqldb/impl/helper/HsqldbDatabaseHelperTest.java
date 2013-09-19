@@ -1,21 +1,20 @@
 package net.codjo.database.hsqldb.impl.helper;
-import java.lang.Thread.State;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 import junit.framework.AssertionFailedError;
 import net.codjo.database.common.api.ConnectionMetadata;
 import net.codjo.database.common.api.DatabaseHelper;
-import static net.codjo.database.common.api.structure.SqlConstraint.foreignKey;
 import net.codjo.database.common.api.structure.SqlTable;
-import static net.codjo.database.common.api.structure.SqlTable.table;
 import net.codjo.database.common.impl.helper.AbstractDatabaseHelperTest;
 import net.codjo.database.hsqldb.impl.query.HsqldbDatabaseQueryHelper;
-import java.sql.SQLException;
-import java.util.Properties;
+import org.junit.Test;
+
+import static net.codjo.database.common.api.structure.SqlConstraint.foreignKey;
+import static net.codjo.database.common.api.structure.SqlTable.table;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
-
-import org.junit.Test;
 public class HsqldbDatabaseHelperTest extends AbstractDatabaseHelperTest {
 
     @Override
@@ -116,7 +115,8 @@ public class HsqldbDatabaseHelperTest extends AbstractDatabaseHelperTest {
             for (String role : roles) {
                 s.executeUpdate("CREATE ROLE " + role);
             }
-        } finally {
+        }
+        finally {
             s.close();
         }
         databaseHelper.changeUserGroup(jdbcFixture.getConnection(), user, users);
@@ -149,6 +149,7 @@ public class HsqldbDatabaseHelperTest extends AbstractDatabaseHelperTest {
         }
     }
 
+
     @Override
     protected void assertLibraryConnectionMetadata(ConnectionMetadata connectionMetadata) {
         assertEquals("", connectionMetadata.getHostname());
@@ -158,5 +159,23 @@ public class HsqldbDatabaseHelperTest extends AbstractDatabaseHelperTest {
         assertEquals("", connectionMetadata.getCatalog());
         assertNull(connectionMetadata.getCharset());
         assertNull(connectionMetadata.getSchema());
+    }
+
+
+    @Test
+    public void test_buildDefaultConnection() throws Exception {
+        final Properties connectionProperties = getConnectionProperties();
+        assertEquals("jdbc:hsqldb:.", databaseHelper.getConnectionUrl(new ConnectionMetadata(connectionProperties)));
+    }
+
+
+    @Test
+    public void test_buildConnection() throws Exception {
+        final Properties connectionProperties = getConnectionProperties();
+        connectionProperties.setProperty("database.hostname", "localhost");
+        connectionProperties.setProperty("database.port", "8792");
+        connectionProperties.setProperty("database.base", "magic");
+        assertEquals("jdbc:hsqldb:hsql://localhost:8792/magic",
+                     databaseHelper.getConnectionUrl(new ConnectionMetadata(connectionProperties)));
     }
 }
