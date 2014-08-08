@@ -1,11 +1,4 @@
 package net.codjo.database.oracle.impl.helper;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Properties;
 import junit.framework.Assert;
 import net.codjo.database.common.api.ConnectionMetadata;
 import net.codjo.database.common.api.DatabaseHelper;
@@ -17,15 +10,15 @@ import net.codjo.database.oracle.impl.query.OracleDatabaseQueryHelper;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.sql.*;
+import java.util.Properties;
+
 import static junit.framework.Assert.assertNotNull;
 import static net.codjo.database.common.api.structure.SqlConstraint.foreignKey;
 import static net.codjo.database.common.api.structure.SqlIndex.normalIndex;
 import static net.codjo.database.common.api.structure.SqlTable.table;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 public class OracleDatabaseHelperTest extends AbstractDatabaseHelperTest {
 
     @Override
@@ -296,8 +289,8 @@ public class OracleDatabaseHelperTest extends AbstractDatabaseHelperTest {
 
     @Test
     public void test_changeUserGroup() throws Exception {
-        databaseHelper.changeUserGroup(jdbcFixture.getConnection(), "APP_USER", "ROLE_UTILISATEUR_IDW");
-        jdbcFixture.advanced().assertUserInGroup("APP_USER", "ROLE_UTILISATEUR_IDW");
+        databaseHelper.changeUserGroup(jdbcFixture.getConnection(), "APP_USER", "ROLE_UTILISATEUR_PRICEHUB");
+        jdbcFixture.advanced().assertUserInGroup("APP_USER", "ROLE_UTILISATEUR_PRICEHUB");
         try {
             databaseHelper.changeUserGroup(jdbcFixture.getConnection(), "APP_USER", "CONNECT");
             jdbcFixture.advanced().assertUserInGroup("APP_USER", "CONNECT");

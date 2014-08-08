@@ -1,8 +1,4 @@
 package net.codjo.database.oracle.impl.fixture;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.PrintStream;
-import java.sql.SQLException;
 import junit.framework.AssertionFailedError;
 import net.codjo.database.common.api.JdbcFixture;
 import net.codjo.database.common.api.JdbcFixtureTest;
@@ -10,10 +6,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.sql.SQLException;
+
 import static net.codjo.database.common.api.structure.SqlConstraint.foreignKey;
 import static net.codjo.database.common.api.structure.SqlField.fields;
 import static net.codjo.database.common.api.structure.SqlTable.table;
-import static net.codjo.test.common.PathUtil.findResourcesFileDirectory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 public class OracleJdbcFixtureTest extends JdbcFixtureTest {
@@ -140,6 +139,6 @@ public class OracleJdbcFixtureTest extends JdbcFixtureTest {
         catch (AssertionFailedError e) {
             assertEquals("User 'APP_USER' not in group 'ROLE_BATCH_IDW'", e.getMessage());
         }
-        jdbcFixture.advanced().assertUserInGroup("APP_USER", "ROLE_UTILISATEUR_IDW");
+        jdbcFixture.advanced().assertUserInGroup("APP_USER", "ROLE_UTILISATEUR_PRICEHUB");
     }
 }
